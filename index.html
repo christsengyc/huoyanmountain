@@ -192,7 +192,7 @@
         <div id="screen-start" class="screen active" style="justify-content: center; text-align: center;">
             <div style="font-size: 100px;">🐆</div>
             <h1 style="color: var(--primary); margin-bottom: 10px;">石虎保育官</h1>
-            <p style="color: #64748b; margin-bottom: 30px;">跟著國土綠網計畫，從農田、溪流到森林，幫助野生動物平安回家。</p>
+            <p style="color: #64748b; margin-bottom: 30px;">成為里山的守護者，幫助石虎平安回家</p>
             <button class="btn btn-primary" id="btn-start-game">🚀 開始冒險</button>
             <button class="btn btn-outline" id="btn-start-passbook">📖 查看里山存摺</button>
         </div>
@@ -204,6 +204,20 @@
             <div class="map-line"><div class="map-dot"></div></div>
             <p id="trans-msg" style="color: #64748b;">請跟著指示牌移動...</p>
             <button class="btn btn-primary" id="btn-trans-next" style="margin-top: 20px;">我已抵達，開始探索</button>
+        </div>
+
+        <!-- 敘事引導區 -->
+        <div id="screen-narrative" class="screen">
+            <div class="game-card">
+                <h3 style="color: var(--primary); margin-top: 0;">國土綠網計畫</h3>
+                <p>歡迎來到 1 樓！在這裡，我們正在編織一張看不見的「綠色大網」。</p>
+                <p>因為人類開發，石虎與其他野生動物的家變得很破碎。綠網利用埤塘、農田與森林，為動物建立安全的通道，讓牠們能避開繁忙的道路。</p>
+                <div style="background: #f1f5f9; padding: 15px; border-radius: 10px; font-size: 0.9rem;">
+                    <strong>💡 觀察重點：</strong><br>
+                    接下來在1樓展區，我們將認識四位受惠於國土綠網的「明星動物」！
+                </div>
+            </div>
+            <p style="text-align: center; color: #94a3b8; font-size: 0.8rem;">閱讀完畢後，請開始挑戰 1 樓任務</p>
         </div>
 
         <!-- 問答挑戰區 -->
@@ -222,7 +236,7 @@
         <div id="screen-passbook" class="screen">
             <h2 style="margin-top: 0;">里山存摺</h2>
             <div class="item-card">
-                <div><strong>🌿 綠網生態挑戰 (A)</strong><br><small>完成四種生物保育任務</small></div>
+                <div><strong>🏛️ 教育館挑戰 (A)</strong><br><small>完成全館任務</small></div>
                 <span class="status-pill status-none" id="st-a">未達成</span>
             </div>
             <div class="item-card">
@@ -235,7 +249,7 @@
             </div>
             <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px dashed var(--secondary);">
                 <strong style="color: var(--secondary);">🎁 可兌換禮品：</strong>
-                <div id="reward-msg" style="margin-top:10px; font-size: 0.9rem;">(請先完成綠網生態挑戰解鎖)</div>
+                <div id="reward-msg" style="margin-top:10px; font-size: 0.9rem;">(請先完成教育館任務解鎖)</div>
             </div>
         </div>
 
@@ -261,10 +275,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        // 合併原始 B1/2F 題目與全新的 1F 題目
         const gameData = [
-            { type: 'transition', targetFloor: '1F 農田濕地區', icon: '🌾', msg: '請前往 1 樓，了解里山農田的泥水隱士。' },
+            // ---------------- [ 1F 綠網特展區 ] ----------------
+            { type: 'transition', targetFloor: '1F 綠網特展區', icon: '🌱', msg: '請前往 1 樓特展區，了解國土綠網的奧祕。' },
+            { type: 'narrative', floor: '1F 綠網特展區' },
             { 
-                type: 'quiz', floor: '1F 農田濕地區', title: '【泥水家園的危機】',
+                type: 'quiz', floor: '1F 綠網特展區', title: '【泥水家園的危機】',
                 context: '水田裡有一條腹部帶著美麗橘紅色的「赤腹游蛇」正在尋找小魚。',
                 q: '「為拯救這群極度瀕危的泥水隱士，國土綠網計畫採取了什麼行動？」',
                 options: [{t: '(A) 把水溝鋪滿水泥並移至水族箱飼養', c:false}, {t:'(B) 保留泥土護岸，引導轉型友善農作', c:true}],
@@ -272,9 +289,8 @@
                 tip: '其實...水泥化會讓赤腹游蛇無法躲藏，人工飼養無法真正解決野外滅絕危機。請試試看更友善環境的方法吧！',
                 emoji: '🐍'
             },
-            { type: 'transition', targetFloor: '2F 高山溪流區', icon: '🐟', msg: '跟著溪流往上走！請前往 2 樓了解國寶魚的挑戰。' },
             { 
-                type: 'quiz', floor: '2F 高山溪流區', title: '【國寶魚的逆流挑戰】',
+                type: 'quiz', floor: '1F 綠網特展區', title: '【國寶魚的逆流挑戰】',
                 context: '櫻花鉤吻鮭準備逆流產卵，卻被幾公尺高的「防洪攔砂壩」截斷去路。',
                 q: '「國土綠網講求『川』的橫向串聯，要如何幫助被阻隔的鮭魚回家？」',
                 options: [{t: '(A) 進行生態改善為階梯狀「魚道」', c:true}, {t:'(B) 派人拿網子撈起，人工搬家送到壩頂', c:false}],
@@ -282,9 +298,8 @@
                 tip: '其實...人工搬家耗時耗力，且容易讓珍貴的國寶魚受傷生病，不是長久之計喔。',
                 emoji: '🐟'
             },
-            { type: 'transition', targetFloor: '3F 淺山山林區', icon: '🌲', msg: '走進森林邊緣，前往 3 樓尋找害羞的森林居民。' },
             { 
-                type: 'quiz', floor: '3F 淺山山林區', title: '【山羌的森林迷宮】',
+                type: 'quiz', floor: '1F 綠網特展區', title: '【山羌的森林迷宮】',
                 context: '人類開闢的新果園與硬鐵絲網，把森林切成迷宮。山羌逃跑時容易卡在網上...',
                 q: '「在國土綠網計畫中，我們要怎麼在果園與野生動物之間取得平衡？」',
                 options: [{t: '(A) 用剛硬的刀片鐵絲網徹底阻絕動物', c:false}, {t:'(B) 鼓勵改用「綠籬」或預留通道的友善圍網', c:true}],
@@ -292,15 +307,60 @@
                 tip: '其實...這樣做會徹底切斷山羌的逃生路線，棲地更加破碎，也更容易讓牠們陷入絕境喔。',
                 emoji: '🦌'
             },
-            { type: 'transition', targetFloor: '1F 生態廊道區', icon: '🐆', msg: '回到淺山交界處，準備完成最後的關鍵任務！' },
             { 
-                type: 'quiz', floor: '1F 生態廊道區', title: '【石虎的平安回家路】',
+                type: 'quiz', floor: '1F 綠網特展區', title: '【石虎的平安回家路】',
                 context: '小石虎準備穿越拓寬的柏油馬路前往對側樹林，前面是呼嘯而過的車輛。',
                 q: '「我們該如何運用計畫的『友善廊道』，幫石虎打造平安回家的路？」',
                 options: [{t: '(A) 建置「動物專用天橋」或「地下涵洞」', c:true}, {t:'(B) 在路邊播放警報喇叭嚇跑石虎', c:false}],
                 ok: '完美的解答！透過天橋、地下涵洞與圍網，石虎不需要走上柏油路就能安全抵達對面！',
                 tip: '其實...驚嚇野生動物可能讓牠們因為恐慌而直接衝進車道，會更加危險喔！',
                 emoji: '🐆'
+            },
+
+            // ---------------- [ B1 常設展區 ] ----------------
+            { type: 'transition', targetFloor: 'B1 常設展區', icon: '🧱', msg: '已學會綠網知識！請前往 B1 常設展區，進入地質與石虎的核心地帶。' },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【紅土家園的秘密】',
+                context: '石虎想在火炎山挖一個避雨洞穴，請觀察展區中的土層構造。',
+                q: '「為了讓洞穴不隨便崩塌，你會選擇在哪種土層挖洞？」',
+                options: [{t: '(A) 鬆散的礫石層', c:false}, {t:'(B) 黏性較強的紅土層', c:true}],
+                ok: '選得好！紅土層因鐵質氧化黏性高，能支撐你的家。這也是火炎山看起來紅通通的原因喔！',
+                tip: '其實...礫石層太過滑溜且地質破碎，大雨一來容易崩塌。紅土層才有足夠的黏性支撐喔！'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【602 公尺警戒線】',
+                context: '石虎爬到了火炎山最高點向下俯瞰。',
+                q: '「山體一直在『長高』但也一直在『變瘦』，這是為什麼？」',
+                options: [{t: '(A) 地殼抬升與大雨沖刷', c:true}, {t:'(B) 人類搬走了大量石頭', c:false}],
+                ok: '沒錯！火炎山地質破碎，大雨後石頭會流向大安溪，所以回家的路每年都在變喔！',
+                tip: '其實...這是板塊擠壓與侵蝕作用的拉鋸戰，地殼抬升使其長高，但豪雨侵蝕卻讓它逐年變瘦。'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【里山的深夜食堂】',
+                context: '深夜肚子餓了，石虎在農田邊覓食。',
+                q: '「哪個才是最安全的『里山大餐』？」',
+                options: [{t: '(A) 田埂間奔跑的野鼠', c:true}, {t:'(B) 雞舍裡不動的雞', c:false}],
+                ok: '聰明的選擇！吃野鼠能幫農民除害，是里山共生的表現。闖雞舍則可能面臨捕獸夾危機喔！',
+                tip: '其實...石虎與雞舍的衝突常導致不幸。在自然界捕食野鼠，是人與自然最和諧的共處方式。'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【沖蝕谷的捉迷藏】',
+                context: '觀察展區中的沖蝕谷照片。',
+                q: '「這種地形對石虎來說有什麼功能？」',
+                options: [{t: '(A) 提供大量果實來源', c:false}, {t:'(B) 躲避掠食者的迷宮', c:true}],
+                ok: '正確！破碎的地形提供了豐富的遮蔽空間。這就是惡地帶給石虎的天然防護罩！',
+                tip: '其實...沖蝕谷植物稀少，但它崎嶇的溝隙卻是天然的隱蔽處，能有效保護石虎不被發現。'
+            },
+
+            // ---------------- [ 2F 接待大廳 ] ----------------
+            { type: 'transition', targetFloor: '2F 接待大廳', icon: '🎁', msg: '挑戰即將完成！請回到 2 樓接待大廳，與服務人員分享你的成果。' },
+            { 
+                type: 'quiz', floor: '2F 接待大廳', title: '【里山資源循環】',
+                context: '石虎安全抵達了！任務憑證可換取「木渣幣」。',
+                q: '「這種實體木渣幣的材料是怎麼來的？」',
+                options: [{t: '(A) 回收木雕街的廢料', c:true}, {t:'(B) 砍伐森林的新鮮樹木', c:false}],
+                ok: '完全正確！回收木藝廢料再製，不但減少垃圾還賦予資源新生命，符合循環經濟精神！',
+                tip: '其實...循環經濟強調的是『資源重複利用』。使用三義木雕剩下的邊角料製作，才是愛地球的表現。'
             }
         ];
 
@@ -330,6 +390,14 @@
                 document.getElementById('trans-msg').innerText = data.msg;
                 topProgress.innerText = '移動中...';
             } 
+            else if(data.type === 'narrative') {
+                showScreen('screen-narrative');
+                topTitle.innerText = '里山觀察';
+                topProgress.innerText = data.floor;
+                document.getElementById('option-btns').style.display = 'none';
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-next').innerText = '我了解了，開始挑戰';
+            }
             else if(data.type === 'quiz') {
                 showScreen('screen-question');
                 topTitle.innerText = data.title;
@@ -345,8 +413,8 @@
                 document.getElementById('feedback').style.display = 'none';
                 document.getElementById('opt-0').disabled = false;
                 document.getElementById('opt-1').disabled = false;
-                
-                // 動態替換動物 Emoji
+
+                // 根據題目資料動態載入動物 Emoji，若無指定則預設為石虎 🐆
                 const animalEmoji = data.emoji || '🐆';
                 document.getElementById('cat-body').innerHTML = `${animalEmoji}<div class="purr-bubble">Hi~🎵</div>`;
                 document.getElementById('cat-body').className = 'cat-visual';
@@ -382,10 +450,10 @@
 
         function finishGame() {
             museumClear = true;
-            alert("恭喜完成綠網生態挑戰！請查看里山存摺。");
+            alert("恭喜成為石虎保育官！請向 2 樓服務台工作人員領取紀念品。");
             document.getElementById('st-a').innerText = '已達成';
             document.getElementById('st-a').className = 'status-pill status-done';
-            document.getElementById('reward-msg').innerHTML = "🎟️ 兌換代碼：GREEN-NET-2024<br>請至 1F 櫃台領取限量紀念品。";
+            document.getElementById('reward-msg').innerHTML = "🎟️ 兌換代碼：FIRE-CAT-2024<br>請至 2F 櫃台領取木渣幣。";
             showScreen('screen-passbook');
             updateNav('nav-passbook');
         }
@@ -395,33 +463,5 @@
             document.getElementById(activeId).classList.add('active');
         }
 
-        document.getElementById('btn-start-game').addEventListener('click', () => { step = 0; updateUI(); });
-        document.getElementById('btn-start-passbook').addEventListener('click', () => { showScreen('screen-passbook'); updateNav('nav-passbook'); });
-        document.getElementById('btn-trans-next').addEventListener('click', () => { step++; updateUI(); });
-        
-        document.getElementById('opt-0').addEventListener('click', () => handleChoice(0));
-        document.getElementById('opt-1').addEventListener('click', () => handleChoice(1));
-        
-        document.getElementById('btn-next').addEventListener('click', () => {
-            if(step === gameData.length - 1) finishGame();
-            else { step++; updateUI(); }
-        });
-
-        document.getElementById('nav-home').addEventListener('click', () => {
-            if(step === -1) showScreen('screen-start');
-            else updateUI();
-            updateNav('nav-home');
-        });
-        document.getElementById('nav-passbook').addEventListener('click', () => {
-            showScreen('screen-passbook');
-            updateNav('nav-passbook');
-        });
-        document.getElementById('nav-help').addEventListener('click', () => {
-            alert('如有操作問題，請尋問各樓層工作人員獲取幫助！');
-        });
-    });
-</script>
-
-</body>
-</html>
-
+        // 綁定事件監聽器
+        document.getElementById('btn-start-game').addEventListener('c
