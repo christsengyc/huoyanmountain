@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石虎保育官：里山任務行動 V5</title>
+    <style>
+        :root {
+            --primary: #4A7c59; /* 森林綠 */
+            --secondary: #c89f5d; /* 大地木色 */
+            --bg: #f8f5f0;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Microsoft JhengHei", -apple-system, sans-serif;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        /* 核心容器：電腦平板置中，手機填滿 */
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* 頂部狀態列 */
+        header {
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-title { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
+        .progress-tag { font-size: 0.8rem; background: var(--bg); padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+
+        /* 主要內容區：可捲動 */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen { display: none; height: 100%; }
+        .screen.active { display: flex; flex-direction: column; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 遊戲元素樣式 */
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: background-color 0.4s;
+        }
+
+        .cat-visual {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cat-happy { transform: scale(1.2); }
+        .cat-sad { transform: scale(0.8); filter: grayscale(0.5); }
+
+        .purr-bubble {
+            position: absolute; top: 0; right: 20%;
+            background: #fdf2f8; color: #db2777; font-size: 14px;
+            padding: 5px 12px; border-radius: 15px; font-weight: bold;
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        .cat-happy .purr-bubble { opacity: 1; animation: bounce 1s infinite; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .question-text { font-size: 1.1rem; font-weight: bold; line-height: 1.5; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
+        .context-text { font-size: 0.9rem; color: #64748b; margin-bottom: 15px; }
+
+        /* 按鈕區固定在下方 */
+        .action-area {
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:active { transform: scale(0.97); }
+
+        /* 回饋區樣式 */
+        .feedback-box {
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .feedback-correct { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .feedback-wrong { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* 樓層指引畫面 */
+        .transition-screen {
+            text-align: center;
+            justify-content: center;
+        }
+
+        .floor-icon { font-size: 50px; margin-bottom: 20px; }
+        .map-line { height: 4px; background: #cbd5e1; width: 100px; margin: 20px auto; position: relative; }
+        .map-dot { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; position: absolute; top: -4px; animation: move 2s infinite; }
+
+        @keyframes move { 0% { left: 0; } 100% { left: 100%; } }
+
+        /* 存摺頁面 */
+        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .status-done { background: #dcfce7; color: #166534; }
+        .status-none { background: #f1f5f9; color: #64748b; }
+
+        /* 底部導覽列 */
+        nav {
+            height: 65px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; }
+        .nav-tab.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <header>
+        <div class="header-title" id="top-title">里山任務行動</div>
+        <div class="progress-tag" id="top-progress">2F 接待區</div>
+    </header>
+
+    <main id="main-content">
+        
+        <!-- 開始畫面 -->
+        <div id="screen-start" class="screen active" style="justify-content: center; text-align: center;">
+            <div style="font-size: 100px;">🐆</div>
+            <h1 style="color: var(--primary); margin-bottom: 10px;">石虎保育官</h1>
+            <p style="color: #64748b; margin-bottom: 30px;">成為里山的守護者，幫助石虎平安回家</p>
+            <button class="btn btn-primary" id="btn-start-game">🚀 開始冒險</button>
+            <button class="btn btn-outline" id="btn-start-passbook">📖 查看里山存摺</button>
+        </div>
+
+        <!-- 樓層轉場 -->
+        <div id="screen-transition" class="screen transition-screen">
+            <div class="floor-icon" id="trans-icon">👣</div>
+            <h2 id="trans-title">正在前往下一個展區</h2>
+            <div class="map-line"><div class="map-dot"></div></div>
+            <p id="trans-msg" style="color: #64748b;">請跟著指示牌移動...</p>
+            <button class="btn btn-primary" id="btn-trans-next" style="margin-top: 20px;">我已抵達，開始探索</button>
+        </div>
+
+        <!-- 敘事引導區 (1F) -->
+        <div id="screen-narrative" class="screen">
+            <div class="game-card">
+                <h3 style="color: var(--primary); margin-top: 0;">國土綠網計畫</h3>
+                <p>歡迎來到 1 樓！在這裡，我們正在編織一張看不見的「綠色大網」。</p>
+                <p>因為人類開發，石虎的家變得很破碎。綠網利用埤塘、農田與森林，為動物建立安全的通道，讓牠們能避開繁忙的道路。</p>
+                <div style="background: #f1f5f9; padding: 15px; border-radius: 10px; font-size: 0.9rem;">
+                    <strong>💡 觀察重點：</strong><br>
+                    找找看展板上的「動物通道」，那是石虎最安全的過馬路方式！
+                </div>
+            </div>
+            <p style="text-align: center; color: #94a3b8; font-size: 0.8rem;">閱讀完畢後，請準備前往下一層樓</p>
+        </div>
+
+        <!-- 問答挑戰區 -->
+        <div id="screen-question" class="screen">
+            <div id="scene-wrapper" class="game-card">
+                <div class="cat-visual" id="cat-body">
+                    🐆<div class="purr-bubble">Purr~🎵</div>
+                </div>
+                <div class="context-text" id="q-context">情境載入中...</div>
+                <div class="question-text" id="q-body">正在獲取任務問題...</div>
+            </div>
+            <div id="feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- 存摺區 -->
+        <div id="screen-passbook" class="screen">
+            <h2 style="margin-top: 0;">里山存摺</h2>
+            <div class="item-card">
+                <div><strong>🏛️ 教育館挑戰 (A)</strong><br><small>完成全館任務</small></div>
+                <span class="status-pill status-none" id="st-a">未達成</span>
+            </div>
+            <div class="item-card">
+                <div><strong>⛰️ 火炎山步道 (B)</strong><br><small>步道口拍照打卡</small></div>
+                <span class="status-pill status-none" id="st-b">未達成</span>
+            </div>
+            <div class="item-card">
+                <div><strong>🏘️ 木雕街特約店 (C)</strong><br><small>消費掃碼</small></div>
+                <span class="status-pill status-none" id="st-c">未達成</span>
+            </div>
+            <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px dashed var(--secondary);">
+                <strong style="color: var(--secondary);">🎁 可兌換禮品：</strong>
+                <div id="reward-msg" style="margin-top:10px; font-size: 0.9rem;">(請先完成教育館任務解鎖)</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 固定於底部的按鈕區 -->
+    <div class="action-area" id="footer-actions">
+        <div id="option-btns">
+            <button class="btn btn-outline" id="opt-0">選項 A</button>
+            <button class="btn btn-outline" id="opt-1">選項 B</button>
+        </div>
+        <button class="btn btn-primary" id="btn-next" style="display: none;">繼續前進</button>
+    </div>
+
+    <!-- 底部導航 -->
+    <nav>
+        <div class="nav-tab active" id="nav-home"><div class="nav-icon">🧭</div>冒險</div>
+        <div class="nav-tab" id="nav-passbook"><div class="nav-icon">📖</div>存摺</div>
+        <div class="nav-tab" id="nav-help"><div class="nav-icon">ℹ️</div>求助</div>
+    </nav>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const gameData = [
+            { type: 'transition', targetFloor: '1F 綠網特展區', icon: '🌱', msg: '請前往 1 樓特展區，了解國土綠網的奧祕。' },
+            { type: 'narrative', floor: '1F 綠網特展區' },
+            { type: 'transition', targetFloor: 'B1 常設展區', icon: '🧱', msg: '已學會綠網知識！請前往 B1 常設展區，進入地質與石虎的核心地帶。' },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【紅土家園的秘密】',
+                context: '石虎想在火炎山挖一個避雨洞穴，請觀察展區中的土層構造。',
+                q: '「為了讓洞穴不隨便崩塌，你會選擇在哪種土層挖洞？」',
+                options: [{t: '(A) 鬆散的礫石層', c:false}, {t:'(B) 黏性較強的紅土層', c:true}],
+                ok: '選得好！紅土層因鐵質氧化黏性高，能支撐你的家。這也是火炎山看起來紅通通的原因喔！',
+                tip: '其實...礫石層太過滑溜且地質破碎，大雨一來容易崩塌。紅土層才有足夠的黏性支撐喔！'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【602 公尺警戒線】',
+                context: '石虎爬到了火炎山最高點向下俯瞰。',
+                q: '「山體一直在『長高』但也一直在『變瘦』，這是為什麼？」',
+                options: [{t: '(A) 地殼抬升與大雨沖刷', c:true}, {t:'(B) 人類搬走了大量石頭', c:false}],
+                ok: '沒錯！火炎山地質破碎，大雨後石頭會流向大安溪，所以回家的路每年都在變喔！',
+                tip: '其實...這是板塊擠壓與侵蝕作用的拉鋸戰，地殼抬升使其長高，但豪雨侵蝕卻讓它逐年變瘦。'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【里山的深夜食堂】',
+                context: '深夜肚子餓了，石虎在農田邊覓食。',
+                q: '「哪個才是最安全的『里山大餐』？」',
+                options: [{t: '(A) 田埂間奔跑的野鼠', c:true}, {t:'(B) 雞舍裡不動的雞', c:false}],
+                ok: '聰明的選擇！吃野鼠能幫農民除害，是里山共生的表現。闖雞舍則可能面臨捕獸夾危機喔！',
+                tip: '其實...石虎與雞舍的衝突常導致不幸。在自然界捕食野鼠，是人與自然最和諧的共處方式。'
+            },
+            { 
+                type: 'quiz', floor: 'B1 常設展區', title: '【沖蝕谷的捉迷藏】',
+                context: '觀察展區中的沖蝕谷照片。',
+                q: '「這種地形對石虎來說有什麼功能？」',
+                options: [{t: '(A) 提供大量果實來源', c:false}, {t:'(B) 躲避掠食者的迷宮', c:true}],
+                ok: '正確！破碎的地形提供了豐富的遮蔽空間。這就是惡地帶給石虎的天然防護罩！',
+                tip: '其實...沖蝕谷植物稀少，但它崎嶇的溝隙卻是天然的隱蔽處，能有效保護石虎不被發現。'
+            },
+            { type: 'transition', targetFloor: '2F 接待大廳', icon: '🎁', msg: '挑戰即將完成！請回到 2 樓接待大廳，與服務人員分享你的成果。' },
+            { 
+                type: 'quiz', floor: '2F 接待大廳', title: '【里山資源循環】',
+                context: '石虎安全抵達了！任務憑證可換取「木渣幣」。',
+                q: '「這種實體木渣幣的材料是怎麼來的？」',
+                options: [{t: '(A) 回收木雕街的廢料', c:true}, {t:'(B) 砍伐森林的新鮮樹木', c:false}],
+                ok: '完全正確！回收木藝廢料再製，不但減少垃圾還賦予資源新生命，符合循環經濟精神！',
+                tip: '其實...循環經濟強調的是『資源重複利用』。使用三義木雕剩下的邊角料製作，才是愛地球的表現。'
+            }
+        ];
+
+        let step = -1;
+        let museumClear = false;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if(id === 'screen-question' || id === 'screen-narrative') {
+                document.getElementById('footer-actions').style.display = 'block';
+            } else {
+                document.getElementById('footer-actions').style.display = 'none';
+            }
+        }
+
+        function updateUI() {
+            const data = gameData[step];
+            const topTitle = document.getElementById('top-title');
+            const topProgress = document.getElementById('top-progress');
+
+            if(data.type === 'transition') {
+                showScreen('screen-transition');
+                document.getElementById('trans-title').innerText = `正前往 ${data.targetFloor}`;
+                document.getElementById('trans-icon').innerText = data.icon;
+                document.getElementById('trans-msg').innerText = data.msg;
+                topProgress.innerText = '移動中...';
+            } 
+            else if(data.type === 'narrative') {
+                showScreen('screen-narrative');
+                topTitle.innerText = '里山觀察';
+                topProgress.innerText = data.floor;
+                document.getElementById('option-btns').style.display = 'none';
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-next').innerText = '我了解了，前往下一站';
+            }
+            else if(data.type === 'quiz') {
+                showScreen('screen-question');
+                topTitle.innerText = data.title;
+                topProgress.innerText = data.floor;
+                
+                document.getElementById('q-context').innerText = data.context;
+                document.getElementById('q-body').innerText = data.q;
+                document.getElementById('opt-0').innerText = data.options[0].t;
+                document.getElementById('opt-1').innerText = data.options[1].t;
+                
+                document.getElementById('option-btns').style.display = 'block';
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('feedback').style.display = 'none';
+                document.getElementById('opt-0').disabled = false;
+                document.getElementById('opt-1').disabled = false;
+                document.getElementById('cat-body').className = 'cat-visual';
+            }
+        }
+
+        function handleChoice(idx) {
+            const data = gameData[step];
+            const isCorrect = data.options[idx].c;
+            const feedback = document.getElementById('feedback');
+            const cat = document.getElementById('cat-body');
+
+            feedback.style.display = 'block';
+            
+            if(isCorrect) {
+                feedback.className = 'feedback-box feedback-correct';
+                feedback.innerHTML = `<strong>🏆 太棒了！</strong><br>${data.ok}`;
+                cat.className = 'cat-visual cat-happy';
+                document.getElementById('option-btns').style.display = 'none';
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-next').innerText = (step === gameData.length - 1) ? '完成冒險 🏁' : '繼續前進';
+            } else {
+                feedback.className = 'feedback-box feedback-wrong';
+                feedback.innerHTML = `<strong>😿 其實...</strong><br>${data.tip}`;
+                cat.className = 'cat-visual cat-sad';
+                document.getElementById(`opt-${idx}`).disabled = true;
+            }
+            setTimeout(() => {
+                const main = document.getElementById('main-content');
+                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+            }, 100);
+        }
+
+        function finishGame() {
+            museumClear = true;
+            alert("恭喜成為石虎保育官！請向 2 樓服務台工作人員領取紀念品。");
+            document.getElementById('st-a').innerText = '已達成';
+            document.getElementById('st-a').className = 'status-pill status-done';
+            document.getElementById('reward-msg').innerHTML = "🎟️ 兌換代碼：FIRE-CAT-2024<br>請至 2F 櫃台領取木渣幣。";
+            showScreen('screen-passbook');
+            updateNav('nav-passbook');
+        }
+
+        function updateNav(activeId) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(activeId).classList.add('active');
+        }
+
+        // 綁定事件監聽器 (解決部分平台 onclick 失效問題)
+        document.getElementById('btn-start-game').addEventListener('click', () => { step = 0; updateUI(); });
+        document.getElementById('btn-start-passbook').addEventListener('click', () => { showScreen('screen-passbook'); updateNav('nav-passbook'); });
+        document.getElementById('btn-trans-next').addEventListener('click', () => { step++; updateUI(); });
+        
+        document.getElementById('opt-0').addEventListener('click', () => handleChoice(0));
+        document.getElementById('opt-1').addEventListener('click', () => handleChoice(1));
+        
+        document.getElementById('btn-next').addEventListener('click', () => {
+            if(step === gameData.length - 1) finishGame();
+            else { step++; updateUI(); }
+        });
+
+        document.getElementById('nav-home').addEventListener('click', () => {
+            if(step === -1) showScreen('screen-start');
+            else updateUI();
+            updateNav('nav-home');
+        });
+        document.getElementById('nav-passbook').addEventListener('click', () => {
+            showScreen('screen-passbook');
+            updateNav('nav-passbook');
+        });
+        document.getElementById('nav-help').addEventListener('click', () => {
+            alert('如有操作問題，請尋問各樓層工作人員獲取幫助！');
+        });
+    });
+</script>
+
+</body>
+</html>
