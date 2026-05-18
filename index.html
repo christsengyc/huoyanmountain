@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>石虎保育官：里山任務行動 V5</title>
+    <title>石虎保育官：里山任務行動</title>
     <style>
         :root {
             --primary: #4A7c59; /* 森林綠 */
@@ -274,8 +274,8 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // 合併原始 B1/2F 題目與全新的 1F 題目
+    // 使用立即執行函數，避免因預覽環境無法觸發 DOMContentLoaded 而導致按鈕失效
+    (function() {
         const gameData = [
             // ---------------- [ 1F 綠網特展區 ] ----------------
             { type: 'transition', targetFloor: '1F 綠網特展區', icon: '🌱', msg: '請前往 1 樓特展區，了解國土綠網的奧祕。' },
@@ -414,7 +414,6 @@
                 document.getElementById('opt-0').disabled = false;
                 document.getElementById('opt-1').disabled = false;
 
-                // 根據題目資料動態載入動物 Emoji，若無指定則預設為石虎 🐆
                 const animalEmoji = data.emoji || '🐆';
                 document.getElementById('cat-body').innerHTML = `${animalEmoji}<div class="purr-bubble">Hi~🎵</div>`;
                 document.getElementById('cat-body').className = 'cat-visual';
@@ -463,5 +462,6 @@
             document.getElementById(activeId).classList.add('active');
         }
 
-        // 綁定事件監聽器
-        document.getElementById('btn-start-game').addEventListener('c
+        // 直接綁定事件
+        document.getElementById('btn-start-game').addEventListener('click', () => { step = 0; updateUI(); });
+        document.getElementById('btn-
