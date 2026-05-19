@@ -77,6 +77,24 @@
         .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; }
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
+
+        /* 影像響應式置中容器 (解決跑版神器) */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 完美的 16:9 比例 */
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -153,7 +171,7 @@
             <h2 style="color: var(--primary); margin-top: 0;">你的碳排紀錄</h2>
             
             <div class="game-card" style="background: #f1f5f9; text-align: center; border-left: 5px solid #3b82f6;">
-                <p style="margin: 0; font-size: 0.95rem; color: #475569;">本次來程產生的碳足跡約為：</p>
+                <p style="margin: 0; font-size: 0.95rem; color: #475569;">本次來程產生的個人碳足跡約為：</p>
                 <strong id="display-carbon-result" style="font-size: 1.8rem; color: #1d4ed8; display: block; margin: 5px 0;">0 kg CO2e</strong>
                 <p style="font-size: 0.75rem; color: #94a3b8; margin: 5px 0 0 0;">*依平均來回距離 50 公里計算，排放係數採用國家標準</p>
             </div>
@@ -194,9 +212,8 @@
 
             <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--primary);">
                 <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 10px;">🎥 火炎山即時影像</strong>
-                <div style="width: 100%; height: 250px; background: #111; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center; position: relative;">
-                    <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" 
-                            style="width: 100%; height: 120%; border: none; object-fit: contain;" scrolling="no"></iframe>
+                <div class="video-container">
+                    <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" scrolling="no"></iframe>
                 </div>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">*若無法顯示，請確認網路連線是否穩定。</p>
             </div>
@@ -418,7 +435,7 @@ window.onload = function() {
 
         document.getElementById('carbon-record-card').style.display = 'block';
         document.getElementById('passbook-carbon-text').innerText = 
-            `交通方式：${transName}\n同行人數：${people} 人\n總碳排：約 ${totalCarbon} kg CO2e`;
+            `交通方式：${transName}\n同行人數：${people} 人\n個人分攤碳排：約 ${totalCarbon} kg CO2e`;
 
         document.getElementById('top-progress').innerText = '隱藏任務';
         showScreen('screen-museum-choice');
