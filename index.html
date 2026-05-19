@@ -77,35 +77,6 @@
         .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; }
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
-
-        /* ===================================================
-           影像響應式置中容器 (解決舊式網頁跑版裁切神器) 
-           =================================================== */
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 75%; /* 維持 4:3 比例 */
-            background: #111;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 800px; /* 給予足夠的固定寬度讓原網頁完整呈現 */
-            height: 600px; /* 給予足夠的固定高度 */
-            border: none;
-            transform-origin: top left;
-            /* 預設手機版縮小比例 (約縮小至 40% 以適應螢幕) */
-            transform: scale(0.42); 
-        }
-        /* 針對不同尺寸螢幕動態調整縮放比例 */
-        @media (min-width: 400px) { .video-container iframe { transform: scale(0.48); } }
-        @media (min-width: 450px) { .video-container iframe { transform: scale(0.54); } }
-        @media (min-width: 500px) { .video-container iframe { transform: scale(0.60); } }
-        @media (min-width: 550px) { .video-container iframe { transform: scale(0.66); } }
-        @media (min-width: 600px) { .video-container iframe { transform: scale(0.70); } }
     </style>
 </head>
 <body>
@@ -221,14 +192,12 @@
                 <p style="color: #94a3b8; text-align: center; margin: 0;">🔒 完成任務與碳計算後，即可查看完整紀錄。</p>
             </div>
 
-            <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--primary);">
+            <div style="background: #fff; padding: 20px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--primary); text-align: center;">
                 <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 10px;">🎥 火炎山即時影像</strong>
-                
-                <div class="video-container">
-                    <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" scrolling="no"></iframe>
-                </div>
-                
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">*若無法顯示，請確認網路連線是否穩定。</p>
+                <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px; line-height: 1.5;">點擊下方按鈕，將開啟新視窗前往水保局網站，觀看火炎山的最新動態！</p>
+                <a href="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" target="_blank" class="btn btn-primary" style="text-decoration: none; margin-bottom: 0;">
+                    🔍 前往觀看即時影像
+                </a>
             </div>
         </div>
 
