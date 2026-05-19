@@ -78,11 +78,13 @@
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
 
-        /* 影像響應式置中容器 (解決跑版神器) */
+        /* ===================================================
+           影像響應式置中容器 (解決舊式網頁跑版裁切神器) 
+           =================================================== */
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 完美的 16:9 比例 */
+            padding-bottom: 75%; /* 維持 4:3 比例 */
             background: #111;
             border-radius: 8px;
             overflow: hidden;
@@ -91,10 +93,19 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 800px; /* 給予足夠的固定寬度讓原網頁完整呈現 */
+            height: 600px; /* 給予足夠的固定高度 */
             border: none;
+            transform-origin: top left;
+            /* 預設手機版縮小比例 (約縮小至 40% 以適應螢幕) */
+            transform: scale(0.42); 
         }
+        /* 針對不同尺寸螢幕動態調整縮放比例 */
+        @media (min-width: 400px) { .video-container iframe { transform: scale(0.48); } }
+        @media (min-width: 450px) { .video-container iframe { transform: scale(0.54); } }
+        @media (min-width: 500px) { .video-container iframe { transform: scale(0.60); } }
+        @media (min-width: 550px) { .video-container iframe { transform: scale(0.66); } }
+        @media (min-width: 600px) { .video-container iframe { transform: scale(0.70); } }
     </style>
 </head>
 <body>
@@ -173,7 +184,7 @@
             <div class="game-card" style="background: #f1f5f9; text-align: center; border-left: 5px solid #3b82f6;">
                 <p style="margin: 0; font-size: 0.95rem; color: #475569;">本次來程產生的個人碳足跡約為：</p>
                 <strong id="display-carbon-result" style="font-size: 1.8rem; color: #1d4ed8; display: block; margin: 5px 0;">0 kg CO2e</strong>
-                <p style="font-size: 0.75rem; color: #94a3b8; margin: 5px 0 0 0;">*依平均來回距離 50 公里計算，排放係數採用國家標準</p>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 5px 0 0 0; line-height: 1.4;">*依平均來回距離 50 公里計算<br>排放係數採用國家環境部公告標準</p>
             </div>
 
             <div class="game-card" style="text-align: center; border: 2px solid #eab308; background: #fefce8;">
@@ -197,7 +208,7 @@
 
             <div class="game-card" id="carbon-record-card" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px;">
                 <strong style="color: #166534;">📊 碳足跡紀錄</strong>
-                <p id="passbook-carbon-text" style="color: #166534; font-size: 0.85rem; margin: 5px 0 5px 0;">正在載入...</p>
+                <p id="passbook-carbon-text" style="color: #166534; font-size: 0.85rem; margin: 8px 0 8px 0; line-height: 1.5;">正在載入...</p>
                 <p style="font-size: 0.7rem; color: #4ade80; margin: 0;">*依平均來回距離 50 公里計算，排放係數採用國家標準</p>
             </div>
 
@@ -212,9 +223,11 @@
 
             <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--primary);">
                 <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 10px;">🎥 火炎山即時影像</strong>
+                
                 <div class="video-container">
                     <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" scrolling="no"></iframe>
                 </div>
+                
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">*若無法顯示，請確認網路連線是否穩定。</p>
             </div>
         </div>
@@ -282,7 +295,7 @@ let gameFinished = false;
 let carbonCalculated = false; 
 
 // ==========================================
-// 3. 畫面控制邏輯 (直接掛載，無縫防呆)
+// 3. 畫面控制邏輯
 // ==========================================
 window.onload = function() {
     
@@ -401,16 +414,15 @@ window.onload = function() {
         updateNav('nav-passbook');
     });
 
-    // -- 綁定：真實碳足跡計算 --
+    // -- 綁定：真實碳足跡計算 (使用國家環境部係數) --
     document.getElementById('btn-calc-carbon').addEventListener('click', () => {
         const transType = document.getElementById('transport-type').value;
         const people = parseInt(document.getElementById('people-count').value);
-        const distanceKm = 50; // 平均來回距離 50 公里
+        const distanceKm = 50; // 預設平均來回距離 50 公里
         
         let totalCarbon = 0;
         let transName = '';
         
-        // 依據國家標準係數計算
         if(transType === 'car') { 
             transName = '自行開車'; 
             totalCarbon = (0.134 * distanceKm) / people; 
