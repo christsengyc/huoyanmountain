@@ -125,10 +125,11 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-bottom: 10px;
+            display: block; /* 讓 <a> 按鈕也能吃滿寬度 */
         }
 
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-primary { background-color: var(--primary); color: white; text-align: center; text-decoration: none; }
+        .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); text-align: center; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn:active { transform: scale(0.97); }
 
@@ -247,9 +248,17 @@
                 <div><strong>🏘️ 木雕街特約店 (C)</strong><br><small>消費掃碼</small></div>
                 <span class="status-pill status-none" id="st-c">未達成</span>
             </div>
-            <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px dashed var(--secondary);">
-                <strong style="color: var(--secondary);">🎁 可兌換禮品：</strong>
-                <div id="reward-msg" style="margin-top:10px; font-size: 0.9rem;">(請先完成教育館任務解鎖)</div>
+            
+            <!-- 隱藏提示：未達成任務前顯示 -->
+            <div id="locked-reward" style="background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; color: #94a3b8; font-size: 0.9rem;">
+                🔒 隱藏任務獎勵：完成所有任務後解鎖
+            </div>
+
+            <!-- 即時影像獎勵：達成任務後顯示 -->
+            <div id="reward-section" style="background: #fff; padding: 20px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--primary); display: none;">
+                <strong style="color: var(--primary); font-size: 1.1rem;">🎥 任務完成解鎖！</strong>
+                <p style="font-size: 0.95rem; margin: 10px 0 15px 0; color: #64748b; line-height: 1.5;">恭喜完成所有挑戰！現在你可以點擊下方按鈕，隨時觀察火炎山的最新動態了。</p>
+                <a href="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" target="_blank" class="btn btn-primary">🔍 觀看火炎山即時影像</a>
             </div>
         </div>
 
@@ -427,10 +436,16 @@
 
     function finishGame() {
         museumClear = true;
-        alert("恭喜成為石虎保育官！請向 2 樓服務台工作人員領取紀念品。");
+        alert("恭喜成為石虎保育官！你已解鎖隱藏的「火炎山即時影像」觀看權限！");
+        
+        // 更新存摺狀態
         document.getElementById('st-a').innerText = '已達成';
         document.getElementById('st-a').className = 'status-pill status-done';
-        document.getElementById('reward-msg').innerHTML = "🎟️ 兌換代碼：FIRE-CAT-2024<br>請至 2F 櫃台領取木渣幣。";
+        
+        // 隱藏鎖定提示，顯示即時影像獎勵區塊
+        document.getElementById('locked-reward').style.display = 'none';
+        document.getElementById('reward-section').style.display = 'block';
+        
         showScreen('screen-passbook');
         updateNav('nav-passbook');
     }
@@ -468,27 +483,4 @@
             document.getElementById('btn-next').innerText = (step === gameData.length - 1) ? '完成冒險 🏁' : '繼續前進';
         } else {
             feedback.className = 'feedback-box feedback-wrong';
-            feedback.innerHTML = `<strong>⚠️ 其實...</strong><br>${data.tip}`;
-            cat.className = 'cat-visual cat-sad';
-            document.getElementById(`opt-${idx}`).disabled = true;
-        }
-        setTimeout(() => {
-            const main = document.getElementById('main-content');
-            main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
-        }, 100);
-    }
-
-    function navHome() {
-        if(step === -1) showScreen('screen-start');
-        else updateUI();
-        updateNav('nav-home');
-    }
-
-    function navHelp() {
-        alert('如有操作問題，請尋問各樓層工作人員獲取幫助！');
-    }
-
-</script>
-
-</body>
-</html>
+   
