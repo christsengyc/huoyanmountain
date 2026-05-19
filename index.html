@@ -429,4 +429,31 @@ window.onload = function() {
 
     // -- 綁定：底部導航列 --
     document.getElementById('nav-home').addEventListener('click', () => {
-        if(gameFinished && !carbon
+        if(gameFinished && !carbonCalculated) {
+            showScreen('screen-basic-reward'); // 破關但還沒算碳，回到基本獎勵頁
+        } else if (gameFinished && carbonCalculated) {
+            alert('你已完成所有任務！請至碳存摺查看紀錄與兌換獎品。');
+            return;
+        } else if(step === -1) {
+            showScreen('screen-start');
+        } else {
+            updateUI(); // 遊戲中，恢復原本的畫面
+        }
+        updateNav('nav-home');
+    });
+
+    document.getElementById('nav-passbook').addEventListener('click', () => {
+        showScreen('screen-passbook');
+        document.getElementById('top-title').innerText = '我的碳存摺';
+        document.getElementById('top-progress').innerText = '紀錄與影像';
+        updateNav('nav-passbook');
+    });
+
+    document.getElementById('nav-help').addEventListener('click', () => {
+        alert('如有操作問題，請尋問各樓層工作人員獲取幫助！');
+    });
+
+};
+</script>
+</body>
+</html>
