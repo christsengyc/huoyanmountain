@@ -229,12 +229,14 @@
             <div class="game-card" style="text-align: left; margin-top: 20px;">
                 <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; color: var(--primary);">恭喜成為石虎保育官！</p>
                 <p style="color: #64748b; margin-bottom: 15px; line-height: 1.5;">您已完成所有生態任務，成功協助編織了里山綠網。</p>
+                
                 <div style="background: #fdf2f8; color: #db2777; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 1.2rem; border: 2px dashed #fbcfe8;">
-                    🎟️ 兌換碼：FIRE-CAT-2024
+                    🌟 任務完成憑證
                 </div>
-                <p style="color: #64748b; font-size: 0.85rem; margin-top: 15px; text-align: center; line-height: 1.4;">請向 2 樓服務台工作人員出示此畫面，即可領取紀念品「木渣幣」。</p>
+                
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 15px; text-align: center; line-height: 1.5;">請向 2 樓服務台工作人員出示此畫面，即可直接領取紀念品「木渣幣」。</p>
             </div>
-            <button class="btn btn-primary" id="btn-reward-passbook" style="margin-top: 10px;">📖 放入里山存摺</button>
+            <button class="btn btn-outline" id="btn-reward-passbook" style="margin-top: 10px;">📖 放入里山存摺</button>
         </div>
 
         <div id="screen-passbook" class="screen">
@@ -277,8 +279,9 @@
 
 </div>
 <script>
-    // 將所有邏輯包裝在 window.onload 中，確保頁面載入完畢後綁定所有按鍵
+    // 綁定於 window.onload，確保所有 HTML 載入完成後才賦予功能，徹底防呆防阻擋
     window.onload = function() {
+        
         let step = -1;
         let museumClear = false;
 
@@ -370,7 +373,7 @@
             }
         ];
 
-        // 核心邏輯函式
+        // UI 顯示控制
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -431,22 +434,29 @@
             }
         }
 
-        // 當最後一題答對並點擊「完成冒險」時觸發
+        // 任務通關邏輯
         function finishGame() {
             museumClear = true;
             
-            // 更新存摺狀態
+            // 更新存摺狀態標籤
             document.getElementById('st-a').innerText = '已達成';
             document.getElementById('st-a').className = 'status-pill status-done';
             
             // 顯示領取獎勵專屬畫面
             showScreen('screen-reward');
             document.getElementById('top-title').innerText = '任務完成';
-            document.getElementById('top-progress').innerText = '領取獎勵';
-            updateNav(''); // 取消導覽列高亮
+            document.getElementById('top-progress').innerText = '領取紀念品';
+            updateNav(''); // 取消下方導覽列的高亮
+            
+            // 系統提醒
+            setTimeout(() => {
+                alert("恭喜成為石虎保育官！請向服務台出示畫面領取獎品。");
+            }, 300);
         }
 
-        // 功能按鍵對應函式
+        // ==========================================
+        // 核心觸發事件函式
+        // ==========================================
         function startGame() {
             step = 0; 
             updateUI();
@@ -498,9 +508,14 @@
                 document.getElementById('top-title').innerText = '里山任務行動';
                 document.getElementById('top-progress').innerText = '2F 接待區';
             } else if (museumClear && step === gameData.length - 1) {
-                // 如果已經通關，按冒險回到獎勵畫面
+                // 若已經通關，按「冒險」會切回「獎勵畫面」保留通關狀態
                 showScreen('screen-reward');
+                document.getElementById('top-title').innerText = '任務完成';
+                document.getElementById('top-progress').innerText = '領取紀念品';
+                updateNav('nav-home');
+                return;
             } else {
+                // 保留目前進度
                 updateUI();
             }
             updateNav('nav-home');
@@ -511,22 +526,23 @@
         }
 
         // ==========================================
-        // 綁定所有按鍵 (避開 HTML inline onclick 安全限制)
+        // 綁定點擊事件 (確保所有按鈕都有反應)
         // ==========================================
-        document.getElementById('btn-start-game').onclick = startGame;
-        document.getElementById('btn-open-passbook').onclick = openPassbook;
-        document.getElementById('btn-trans-next').onclick = nextStep;
+        document.getElementById('btn-start-game').addEventListener('click', startGame);
+        document.getElementById('btn-open-passbook').addEventListener('click', openPassbook);
+        document.getElementById('btn-trans-next').addEventListener('click', nextStep);
         
-        document.getElementById('opt-0').onclick = function() { handleChoice(0); };
-        document.getElementById('opt-1').onclick = function() { handleChoice(1); };
-        document.getElementById('btn-next').onclick = nextStep;
+        document.getElementById('opt-0').addEventListener('click', function() { handleChoice(0); });
+        document.getElementById('opt-1').addEventListener('click', function() { handleChoice(1); });
+        document.getElementById('btn-next').addEventListener('click', nextStep);
         
         // 獎勵畫面的按鈕
-        document.getElementById('btn-reward-passbook').onclick = openPassbook;
+        document.getElementById('btn-reward-passbook').addEventListener('click', openPassbook);
         
-        document.getElementById('nav-home').onclick = navHome;
-        document.getElementById('nav-passbook').onclick = openPassbook;
-        document.getElementById('nav-help').onclick = navHelp;
+        // 導航列
+        document.getElementById('nav-home').addEventListener('click', navHome);
+        document.getElementById('nav-passbook').addEventListener('click', openPassbook);
+        document.getElementById('nav-help').addEventListener('click', navHelp);
     };
 </script>
 
