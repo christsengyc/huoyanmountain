@@ -2,33 +2,24 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>石虎保育官：里山任務行動</title>
     </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="header-title" id="top-title">里山任務行動</div>
-            <div class="progress-tag" id="top-progress">2F 接待區</div>
-        </header>
 
-        <main id="main-content">
-            </main>
+    <script>
+        // 1. 這裡放變數
+        var step = -1;
+        var museumClear = false;
 
-        <div class="action-area" id="footer-actions">...</div>
-        <nav>...</nav>
-    </div>
-    // 全域變數
-let step = -1;
-let museumClear = false;
-const gameData = [ /* ...放入之前提供的完整題目陣列... */ ];
+        // 2. 這裡放 gameData 陣列
+        var gameData = [ /* 這裡放入你之前的所有題目資料 */ ];
 
-window.onload = function() {
-    // 這裡放入我上一則訊息給你的所有 function (showScreen, updateUI, finishGame, handleChoice, 以及所有 eventListener 綁定)
-    
-    // 這是最底部的綁定區 (確認所有按鍵都在這)
-    document.getElementById('btn-start-game').addEventListener('click', startGame);
-    document.getElementById('btn-open-passbook').addEventListener('click', openPassbook);
-    document.getElementById('btn-trans-next').addEventListener('click', nextStep);
-    // ...以此類推綁定所有按鍵
-};
+        // 3. 這裡放所有的 function (showScreen, updateUI, handleChoice...)
+        
+        // 4. 最重要：直接在最後面執行綁定，不需要 window.onload
+        document.getElementById('btn-start-game').onclick = startGame;
+        document.getElementById('btn-open-passbook').onclick = openPassbook;
+        // ... (以此類推綁定其他按鈕)
+    </script>
+</body>
+</html>
