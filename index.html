@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>石虎保育官：里山任務行動 (碳存摺升級版)</title>
+    <title>石虎保育官：里山任務行動 (碳存摺最終版)</title>
     <style>
         :root {
             --primary: #4A7c59; /* 森林綠 */
@@ -155,6 +155,7 @@
             <div class="game-card" style="background: #f1f5f9; text-align: center; border-left: 5px solid #3b82f6;">
                 <p style="margin: 0; font-size: 0.95rem; color: #475569;">本次來程產生的碳足跡約為：</p>
                 <strong id="display-carbon-result" style="font-size: 1.8rem; color: #1d4ed8; display: block; margin: 5px 0;">0 kg CO2e</strong>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin: 5px 0 0 0;">*依平均來回距離 50 公里計算，排放係數採用國家標準</p>
             </div>
 
             <div class="game-card" style="text-align: center; border: 2px solid #eab308; background: #fefce8;">
@@ -173,12 +174,13 @@
             
             <div class="game-card" id="basic-reward-card" style="display: none; background: #fdf2f8; border: 1px solid #fbcfe8; padding: 15px;">
                 <strong style="color: #db2777;">✅ 基本獎勵已達成</strong>
-                <p style="color: #9d174d; font-size: 0.85rem; margin: 5px 0 0 0;">可至服務台兌換「木渣幣」。</p>
+                <p style="color: #9d174d; font-size: 0.85rem; margin: 5px 0 0 0;">可至 2 樓服務台兌換「木渣幣」。</p>
             </div>
 
             <div class="game-card" id="carbon-record-card" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px;">
                 <strong style="color: #166534;">📊 碳足跡紀錄</strong>
-                <p id="passbook-carbon-text" style="color: #166534; font-size: 0.85rem; margin: 5px 0 0 0;">正在載入...</p>
+                <p id="passbook-carbon-text" style="color: #166534; font-size: 0.85rem; margin: 5px 0 5px 0;">正在載入...</p>
+                <p style="font-size: 0.7rem; color: #4ade80; margin: 0;">*依平均來回距離 50 公里計算，排放係數採用國家標準</p>
             </div>
 
             <div class="game-card" id="hidden-reward-card" style="display: none; background: #fffbeb; border: 1px solid #fde047; padding: 15px;">
@@ -192,10 +194,11 @@
 
             <div style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid var(--primary);">
                 <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 10px;">🎥 火炎山即時影像</strong>
-                <div style="width: 100%; height: 250px; background: #eee; overflow: hidden; border-radius: 8px;">
+                <div style="width: 100%; height: 250px; background: #111; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center; position: relative;">
                     <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1" 
-                            style="width: 100%; height: 100%; border: none;" scrolling="no"></iframe>
+                            style="width: 100%; height: 120%; border: none; object-fit: contain;" scrolling="no"></iframe>
                 </div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">*若無法顯示，請確認網路連線是否穩定。</p>
             </div>
         </div>
 
@@ -258,11 +261,11 @@ const quizDatabase = {
 let step = -1;
 let currentDifficulty = ''; 
 let currentGameData = [];
-let gameFinished = false; // 任務是否通關
-let carbonCalculated = false; // 碳排是否已計算
+let gameFinished = false; 
+let carbonCalculated = false; 
 
 // ==========================================
-// 3. 畫面控制邏輯 (完全使用 EventListener 防呆)
+// 3. 畫面控制邏輯 (直接掛載，無縫防呆)
 // ==========================================
 window.onload = function() {
     
@@ -301,7 +304,6 @@ window.onload = function() {
             document.getElementById('opt-0').innerText = data.options[0].t;
             document.getElementById('opt-1').innerText = data.options[1].t;
             
-            // 重置按鈕狀態
             document.getElementById('opt-0').style.display = 'block';
             document.getElementById('opt-1').style.display = 'block';
             document.getElementById('opt-0').disabled = false;
@@ -366,7 +368,6 @@ window.onload = function() {
             document.getElementById('top-title').innerText = '任務達成';
             document.getElementById('top-progress').innerText = '基本獎勵';
             
-            // 存摺解鎖基本卡片
             document.getElementById('locked-card').style.display = 'none';
             document.getElementById('basic-reward-card').style.display = 'block';
             
@@ -383,37 +384,49 @@ window.onload = function() {
         updateNav('nav-passbook');
     });
 
-    // -- 綁定：碳足跡計算執行 --
+    // -- 綁定：真實碳足跡計算 --
     document.getElementById('btn-calc-carbon').addEventListener('click', () => {
         const transType = document.getElementById('transport-type').value;
-        const people = document.getElementById('people-count').value;
+        const people = parseInt(document.getElementById('people-count').value);
+        const distanceKm = 50; // 平均來回距離 50 公里
         
-        let carbonBase = 0;
+        let totalCarbon = 0;
         let transName = '';
-        if(transType === 'car') { carbonBase = 15; transName = '汽車'; }
-        else if(transType === 'scooter') { carbonBase = 5; transName = '機車'; }
-        else if(transType === 'bus') { carbonBase = 2; transName = '大眾客運'; }
-        else if(transType === 'train') { carbonBase = 1; transName = '火車'; }
+        
+        // 依據國家標準係數計算
+        if(transType === 'car') { 
+            transName = '自行開車'; 
+            totalCarbon = (0.134 * distanceKm) / people; 
+        }
+        else if(transType === 'scooter') { 
+            transName = '騎機車'; 
+            totalCarbon = (0.046 * distanceKm) / people; 
+        }
+        else if(transType === 'bus') { 
+            transName = '大眾客運'; 
+            totalCarbon = 0.055 * distanceKm; 
+        }
+        else if(transType === 'train') { 
+            transName = '火車'; 
+            totalCarbon = 0.054 * distanceKm; 
+        }
 
-        const totalCarbon = carbonBase * parseInt(people);
+        totalCarbon = totalCarbon.toFixed(1);
         carbonCalculated = true;
         
-        // 1. 寫入下一個畫面的巨大顯示字體
         document.getElementById('display-carbon-result').innerText = `${totalCarbon} kg CO2e`;
 
-        // 2. 寫入存摺紀錄
         document.getElementById('carbon-record-card').style.display = 'block';
         document.getElementById('passbook-carbon-text').innerText = 
             `交通方式：${transName}\n同行人數：${people} 人\n總碳排：約 ${totalCarbon} kg CO2e`;
 
-        // 3. 跳轉至「結果與博物館選擇畫面」
         document.getElementById('top-progress').innerText = '隱藏任務';
         showScreen('screen-museum-choice');
     });
 
     // -- 綁定：博物館交通選擇 (低碳) --
     document.getElementById('btn-go-walk').addEventListener('click', () => {
-        document.getElementById('hidden-reward-card').style.display = 'block'; // 存摺解鎖隱藏卡
+        document.getElementById('hidden-reward-card').style.display = 'block'; 
         alert('🎉 太棒了！您解鎖了隱藏的低碳專屬獎勵！已放入您的碳存摺。');
         document.getElementById('top-title').innerText = '我的碳存摺';
         document.getElementById('top-progress').innerText = '總覽';
@@ -430,14 +443,14 @@ window.onload = function() {
     // -- 綁定：底部導航列 --
     document.getElementById('nav-home').addEventListener('click', () => {
         if(gameFinished && !carbonCalculated) {
-            showScreen('screen-basic-reward'); // 破關但還沒算碳，回到基本獎勵頁
+            showScreen('screen-basic-reward');
         } else if (gameFinished && carbonCalculated) {
             alert('你已完成所有任務！請至碳存摺查看紀錄與兌換獎品。');
             return;
         } else if(step === -1) {
             showScreen('screen-start');
         } else {
-            updateUI(); // 遊戲中，恢復原本的畫面
+            updateUI(); 
         }
         updateNav('nav-home');
     });
