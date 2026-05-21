@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>石虎保育官：里山任務行動 (碳存摺最終版)</title>
+    <title>石虎保育官：里山任務行動 (碳存摺最終優化版)</title>
     <style>
         :root {
             --primary: #4A7c59; /* 森林綠 */
@@ -77,6 +77,22 @@
         .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; }
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
+
+        /* 影像響應式容器 */
+        .video-container {
+            position: relative; width: 100%; padding-bottom: 75%; 
+            background: #111; border-radius: 8px; overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute; top: 0; left: 0;
+            width: 800px; height: 600px; border: none;
+            transform-origin: top left; transform: scale(0.42); 
+        }
+        @media (min-width: 400px) { .video-container iframe { transform: scale(0.48); } }
+        @media (min-width: 450px) { .video-container iframe { transform: scale(0.54); } }
+        @media (min-width: 500px) { .video-container iframe { transform: scale(0.60); } }
+        @media (min-width: 550px) { .video-container iframe { transform: scale(0.66); } }
+        @media (min-width: 600px) { .video-container iframe { transform: scale(0.70); } }
     </style>
 </head>
 <body>
@@ -119,9 +135,9 @@
             <h2 style="color: var(--primary); margin-bottom: 5px;">任務達成！</h2>
             <p style="color: #64748b; margin-bottom: 20px;">你已成功完成所有生態挑戰。</p>
             
-            <div class="game-card" style="background: #fdf2f8; border: 2px dashed #fbcfe8; padding: 20px;">
-                <strong style="color: #db2777; font-size: 1.1rem; display: block; margin-bottom: 10px;">獲得基本紀念品：木渣幣</strong>
-                <p style="font-size: 0.9rem; color: #9d174d; margin: 0;">請向 2 樓服務台工作人員出示此畫面，即可兌換你的專屬好禮！</p>
+            <div class="game-card" id="dynamic-reward-box" style="border: 2px dashed #cbd5e1; padding: 20px;">
+                <strong id="dynamic-reward-title" style="font-size: 1.2rem; display: block; margin-bottom: 10px;">獲得獎勵載入中...</strong>
+                <p id="dynamic-reward-desc" style="font-size: 0.95rem; margin: 0; font-weight: bold;">請向 2 樓服務台工作人員出示此畫面，即可兌換你的專屬好禮！</p>
             </div>
 
             <p style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">接下來，讓我們來看看你的環保行動...</p>
@@ -172,9 +188,9 @@
         <div id="screen-passbook" class="screen">
             <h2 style="margin-top: 0;">我的碳存摺 🍃</h2>
             
-            <div class="game-card" id="basic-reward-card" style="display: none; background: #fdf2f8; border: 1px solid #fbcfe8; padding: 15px;">
-                <strong style="color: #db2777;">✅ 基本獎勵已達成</strong>
-                <p style="color: #9d174d; font-size: 0.85rem; margin: 5px 0 0 0;">可至 2 樓服務台兌換「木渣幣」。</p>
+            <div class="game-card" id="passbook-reward-card" style="display: none; padding: 15px;">
+                <strong id="passbook-reward-title" style="font-size: 1.05rem;">✅ 任務獎勵已達成</strong>
+                <p style="font-size: 0.85rem; margin: 5px 0 0 0;">可至 2 樓服務台兌換實體獎勵。</p>
             </div>
 
             <div class="game-card" id="carbon-record-card" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px;">
@@ -219,7 +235,7 @@
 
 <script>
 // ==========================================
-// 1. 遊戲資料建置 (模擬模板 5題-5題-1題)
+// 1. 遊戲資料建置 (加入 location 館內位置欄位)
 // ==========================================
 function generateFloorQuestions(floorName, count, prefix) {
     let qList = [];
@@ -235,7 +251,8 @@ function generateFloorQuestions(floorName, count, prefix) {
                 { t: `(B) 錯誤選項模板`, c: false }
             ],
             ok: `答對了！這對環境很有幫助！`,
-            tip: `其實...這個選項對生態不好喔！`
+            tip: `其實...這個選項對生態不好喔！`,
+            location: `${floorName} 的第 ${i} 展區解說牌旁` // 新增的館內位置模板
         });
     }
     return qList;
@@ -262,13 +279,13 @@ let currentDifficulty = '';
 let currentGameData = [];
 let gameFinished = false; 
 let carbonCalculated = false; 
+let penaltyTimer = null; // 用來記錄 10 秒計時器
 
 // ==========================================
 // 3. 畫面控制邏輯
 // ==========================================
 window.onload = function() {
     
-    // -- 介面切換工具 --
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -280,8 +297,8 @@ window.onload = function() {
         if(activeId) document.getElementById(activeId).classList.add('active');
     }
 
-    // -- 題目載入器 --
     function updateUI() {
+        if(penaltyTimer) clearInterval(penaltyTimer); // 切換題目時清除潛在的計時器
         const data = currentGameData[step];
         const topTitle = document.getElementById('top-title');
         const topProgress = document.getElementById('top-progress');
@@ -313,7 +330,7 @@ window.onload = function() {
         }
     }
 
-    // -- 答題邏輯 --
+    // -- 答題邏輯 (含 10 秒冷卻與位置提示) --
     function handleChoice(idx) {
         const data = currentGameData[step];
         const isCorrect = data.options[idx].c;
@@ -322,6 +339,7 @@ window.onload = function() {
 
         feedback.style.display = 'block';
         if(isCorrect) {
+            if(penaltyTimer) clearInterval(penaltyTimer); // 答對即清除倒數
             feedback.className = 'feedback-box feedback-correct';
             feedback.innerHTML = `<strong>🏆 太棒了！</strong><br>${data.ok}`;
             cat.innerText = '😻';
@@ -335,10 +353,40 @@ window.onload = function() {
                 document.getElementById('btn-next').innerText = '繼續前進';
             }
         } else {
-            feedback.className = 'feedback-box feedback-wrong';
-            feedback.innerHTML = `<strong>⚠️ 其實...</strong><br>${data.tip}`;
+            // 答錯邏輯
             cat.innerText = '😿';
-            document.getElementById(`opt-${idx}`).disabled = true;
+            document.getElementById('opt-0').disabled = true;
+            document.getElementById('opt-1').disabled = true;
+            
+            // 顯示詳解與館內位置，並加上倒數計時器預留區塊
+            feedback.className = 'feedback-box feedback-wrong';
+            feedback.innerHTML = `<strong>⚠️ 其實...</strong><br>${data.tip}<br><br><span style="color: #0369a1;">📍 <strong>這東西在哪裡：</strong><br>${data.location}</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;">系統冷卻中，請等待 10 秒...</div>`;
+            
+            let timeLeft = 10;
+            penaltyTimer = setInterval(() => {
+                timeLeft--;
+                const timerEl = document.getElementById('timer-display');
+                if(timerEl) {
+                    if(timeLeft > 0) {
+                        timerEl.innerText = `系統冷卻中，請等待 ${timeLeft} 秒...`;
+                    } else {
+                        clearInterval(penaltyTimer);
+                        timerEl.style.display = 'none';
+                        // 10秒後恢復另一顆按鈕的點擊權限，但按錯的那顆依舊保持不能按
+                        document.getElementById('opt-0').disabled = false;
+                        document.getElementById('opt-1').disabled = false;
+                        document.getElementById(`opt-${idx}`).disabled = true; 
+                    }
+                } else {
+                    clearInterval(penaltyTimer);
+                }
+            }, 1000);
+            
+            // 畫面滾動到最下方方便看倒數
+            setTimeout(() => {
+                const main = document.getElementById('main-content');
+                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+            }, 100);
         }
     }
 
@@ -355,39 +403,64 @@ window.onload = function() {
         step = 0; updateUI(); updateNav('nav-home');
     });
 
-    // -- 綁定：問答區按鈕 --
     document.getElementById('btn-trans-next').addEventListener('click', () => { step++; updateUI(); });
     document.getElementById('opt-0').addEventListener('click', () => handleChoice(0));
     document.getElementById('opt-1').addEventListener('click', () => handleChoice(1));
     
-    // -- 綁定：繼續前進 (切換至基本獎勵畫面) --
+    // -- 繼續前進 (切換至動態獎勵畫面) --
     document.getElementById('btn-next').addEventListener('click', () => {
         if(step === currentGameData.length - 1) {
             gameFinished = true;
             document.getElementById('top-title').innerText = '任務達成';
-            document.getElementById('top-progress').innerText = '基本獎勵';
+            document.getElementById('top-progress').innerText = '領取獎勵';
             
+            // 判斷並設定動態獎勵樣式與文字
+            const dynamicBox = document.getElementById('dynamic-reward-box');
+            const dynamicTitle = document.getElementById('dynamic-reward-title');
+            const passbookRewardCard = document.getElementById('passbook-reward-card');
+            const passbookRewardTitle = document.getElementById('passbook-reward-title');
+
+            if (currentDifficulty === 'basic') {
+                dynamicBox.style.background = '#f0fdf4';
+                dynamicBox.style.borderColor = '#22c55e';
+                dynamicTitle.style.color = '#166534';
+                dynamicTitle.innerText = '獲得：基礎獎勵 🎁';
+                
+                passbookRewardCard.style.background = '#f0fdf4';
+                passbookRewardCard.style.borderColor = '#bbf7d0';
+                passbookRewardTitle.style.color = '#166534';
+                passbookRewardTitle.innerText = '✅ 獲得：基礎獎勵';
+            } else {
+                dynamicBox.style.background = '#fef2f2';
+                dynamicBox.style.borderColor = '#ef4444';
+                dynamicTitle.style.color = '#991b1b';
+                dynamicTitle.innerText = '獲得：進階獎勵 🏆';
+
+                passbookRewardCard.style.background = '#fef2f2';
+                passbookRewardCard.style.borderColor = '#fecaca';
+                passbookRewardTitle.style.color = '#991b1b';
+                passbookRewardTitle.innerText = '✅ 獲得：進階獎勵';
+            }
+
             document.getElementById('locked-card').style.display = 'none';
-            document.getElementById('basic-reward-card').style.display = 'block';
-            
+            passbookRewardCard.style.display = 'block';
             showScreen('screen-basic-reward');
         } else {
             step++; updateUI();
         }
     });
 
-    // -- 綁定：從基本獎勵前往碳計算器 --
     document.getElementById('btn-go-carbon-calc').addEventListener('click', () => {
         document.getElementById('top-progress').innerText = '碳足跡計算';
         showScreen('screen-carbon-calc');
         updateNav('nav-passbook');
     });
 
-    // -- 綁定：真實碳足跡計算 (使用國家環境部係數) --
+    // -- 綁定：真實碳足跡計算 --
     document.getElementById('btn-calc-carbon').addEventListener('click', () => {
         const transType = document.getElementById('transport-type').value;
         const people = parseInt(document.getElementById('people-count').value);
-        const distanceKm = 50; // 預設平均來回距離 50 公里
+        const distanceKm = 50; 
         
         let totalCarbon = 0;
         let transName = '';
@@ -413,7 +486,6 @@ window.onload = function() {
         carbonCalculated = true;
         
         document.getElementById('display-carbon-result').innerText = `${totalCarbon} kg CO2e`;
-
         document.getElementById('carbon-record-card').style.display = 'block';
         document.getElementById('passbook-carbon-text').innerText = 
             `交通方式：${transName}\n同行人數：${people} 人\n個人分攤碳排：約 ${totalCarbon} kg CO2e`;
@@ -422,7 +494,6 @@ window.onload = function() {
         showScreen('screen-museum-choice');
     });
 
-    // -- 綁定：博物館交通選擇 (低碳) --
     document.getElementById('btn-go-walk').addEventListener('click', () => {
         document.getElementById('hidden-reward-card').style.display = 'block'; 
         alert('🎉 太棒了！您解鎖了隱藏的低碳專屬獎勵！已放入您的碳存摺。');
@@ -431,14 +502,12 @@ window.onload = function() {
         showScreen('screen-passbook');
     });
 
-    // -- 綁定：博物館交通選擇 (高碳) --
     document.getElementById('btn-go-car').addEventListener('click', () => {
         document.getElementById('top-title').innerText = '我的碳存摺';
         document.getElementById('top-progress').innerText = '總覽';
         showScreen('screen-passbook');
     });
 
-    // -- 綁定：底部導航列 --
     document.getElementById('nav-home').addEventListener('click', () => {
         if(gameFinished && !carbonCalculated) {
             showScreen('screen-basic-reward');
