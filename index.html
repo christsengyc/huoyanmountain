@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>石虎保育官：里山任務行動 (碳存摺最終優化版)</title>
+    <title>石虎保育官：里山任務行動 (全齡教育最終版)</title>
     <style>
         :root {
-            --primary: #4A7c59; /* 森林綠 */
-            --secondary: #c89f5d; /* 大地木色 */
+            --primary: #4A7c59; 
+            --secondary: #c89f5d; 
             --bg: #f8f5f0;
             --card-bg: #ffffff;
             --text: #334155;
-            --success: #22c55e;
         }
 
         * { box-sizing: border-box; }
@@ -22,14 +21,12 @@
             background-color: #e2e8f0; display: flex; justify-content: center; color: var(--text);
         }
 
-        /* 核心容器 */
         .app-container {
             width: 100%; max-width: 600px; background-color: var(--bg);
             height: 100vh; display: flex; flex-direction: column; position: relative;
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
 
-        /* 頂部狀態列 */
         header {
             padding: 15px 20px; background: #fff; border-bottom: 1px solid #e2e8f0;
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
@@ -37,22 +34,23 @@
         .header-title { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
         .progress-tag { font-size: 0.8rem; background: var(--bg); padding: 4px 10px; border-radius: 20px; font-weight: bold; }
 
-        /* 主要內容區 */
         main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
         .screen { display: none; height: 100%; flex-direction: column; }
         .screen.active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 遊戲元素樣式 */
         .game-card {
             background: var(--card-bg); border-radius: 20px; padding: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
         }
         .cat-visual { font-size: 80px; text-align: center; margin-bottom: 15px; }
-        .question-text { font-size: 1.1rem; font-weight: bold; line-height: 1.5; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
-        .context-text { font-size: 0.9rem; color: #64748b; margin-bottom: 15px; }
+        .question-text { font-size: 1.1rem; font-weight: bold; line-height: 1.8; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
+        .context-text { font-size: 0.95rem; color: #475569; margin-bottom: 15px; line-height: 1.6; }
 
-        /* 按鈕區 */
+        /* 注音排版優化 */
+        ruby { ruby-align: center; margin-right: 2px; }
+        rt { font-size: 0.65em; color: #64748b; font-weight: normal; }
+
         .action-area { padding: 20px; background: #fff; border-top: 1px solid #e2e8f0; flex-shrink: 0; display: none; }
         .btn {
             width: 100%; padding: 16px; border-radius: 12px; border: none;
@@ -62,23 +60,19 @@
         .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); text-align: center; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* 回饋區樣式 */
         .feedback-box { padding: 15px; border-radius: 12px; margin-top: 10px; display: none; font-size: 0.95rem; line-height: 1.6; }
         .feedback-correct { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .feedback-wrong { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* 表單元素 */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem; }
 
-        /* 底部導覽列 */
         nav { height: 65px; background: white; border-top: 1px solid #e2e8f0; display: flex; flex-shrink: 0; }
         .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #94a3b8; cursor: pointer; }
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
 
-        /* 影像響應式容器 */
         .video-container {
             position: relative; width: 100%; padding-bottom: 75%; 
             background: #111; border-radius: 8px; overflow: hidden;
@@ -110,15 +104,15 @@
             <div style="font-size: 100px;">🐆</div>
             <h1 style="color: var(--primary); margin-bottom: 5px;">石虎保育官</h1>
             <p style="color: #64748b; margin-bottom: 30px;">請選擇你的挑戰難度</p>
-            <button class="btn btn-primary" id="btn-start-basic">🌱 基礎關卡 (適合初心探索者)</button>
-            <button class="btn btn-outline" id="btn-start-adv" style="border-color: #c89f5d; color: #c89f5d;">🔥 進階關卡 (適合生態達人)</button>
+            <button class="btn btn-primary" id="btn-start-basic">🌱 基礎關卡 (附注音/低年級)</button>
+            <button class="btn btn-outline" id="btn-start-adv" style="border-color: #c89f5d; color: #c89f5d;">🔥 進階關卡 (生態達人挑戰)</button>
         </div>
 
         <div id="screen-transition" class="screen" style="text-align: center; justify-content: center;">
             <div style="font-size: 50px;" id="trans-icon">👣</div>
             <h2 id="trans-title">前往下一區</h2>
-            <p id="trans-msg" style="color: #64748b;">準備好後請繼續</p>
-            <button class="btn btn-primary" id="btn-trans-next" style="margin-top: 20px;">我已抵達，開始挑戰</button>
+            <p id="trans-msg" style="color: #64748b; line-height: 1.6;">準備好後請繼續</p>
+            <button class="btn btn-primary" id="btn-trans-next" style="margin-top: 20px;">我已抵達，開始探索</button>
         </div>
 
         <div id="screen-question" class="screen">
@@ -137,7 +131,7 @@
             
             <div class="game-card" id="dynamic-reward-box" style="border: 2px dashed #cbd5e1; padding: 20px;">
                 <strong id="dynamic-reward-title" style="font-size: 1.2rem; display: block; margin-bottom: 10px;">獲得獎勵載入中...</strong>
-                <p id="dynamic-reward-desc" style="font-size: 0.95rem; margin: 0; font-weight: bold;">請向 2 樓服務台工作人員出示此畫面，即可兌換你的專屬好禮！</p>
+                <p id="dynamic-reward-desc" style="font-size: 0.95rem; margin: 0; font-weight: bold;">請向 2 樓服務台出示此畫面，兌換你的專屬好禮！</p>
             </div>
 
             <p style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">接下來，讓我們來看看你的環保行動...</p>
@@ -235,41 +229,314 @@
 
 <script>
 // ==========================================
-// 1. 遊戲資料建置 (加入 location 館內位置欄位)
+// 1. 遊戲資料建置 (完整雙題庫)
 // ==========================================
-function generateFloorQuestions(floorName, count, prefix) {
-    let qList = [];
-    qList.push({ type: 'transition', floor: floorName, title: `進入 ${floorName}`, msg: `準備開始 ${floorName} 的探索！` });
-    for(let i=1; i<=count; i++) {
-        qList.push({
-            type: 'quiz', floor: floorName,
-            title: `【${floorName} 任務 ${i}】`,
-            context: `這是 ${prefix} 的情境描述模板 ${i}...`,
-            q: `請問以下哪種做法是正確的？`,
-            options: [
-                { t: `(A) 正確選項模板`, c: true },
-                { t: `(B) 錯誤選項模板`, c: false }
-            ],
-            ok: `答對了！這對環境很有幫助！`,
-            tip: `其實...這個選項對生態不好喔！`,
-            location: `${floorName} 的第 ${i} 展區解說牌旁` // 新增的館內位置模板
-        });
-    }
-    return qList;
-}
 
 const quizDatabase = {
+    // 【基礎關卡】：針對國小低年級，使用簡單詞彙與注音標記格式 字(ㄗˋ)
     basic: [
-        ...generateFloorQuestions('1F 綠網特展區', 5, '基礎版'),
-        ...generateFloorQuestions('B1 常設展區', 5, '基礎版'),
-        ...generateFloorQuestions('2F 接待大廳', 1, '基礎版')
+        { type: 'transition', floor: '1F 綠網特展區', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 1 樓(ㄌㄡˊ)', msg: '準(ㄓㄨㄣˇ)備(ㄅㄟˋ)開(ㄎㄞ)始(ㄕˇ) 1 樓(ㄌㄡˊ)的(ㄉㄜ˙)生(ㄕㄥ)態(ㄊㄞˋ)探(ㄊㄢˋ)索(ㄙㄨㄛˇ)！' },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🐍', location: '1樓(ㄌㄡˊ) 特(ㄊㄜˋ)展(ㄓㄢˇ)區(ㄑㄩ)東(ㄉㄨㄥ)側(ㄘㄜˋ)',
+            title: '【泥(ㄋㄧˊ)水(ㄕㄨㄟˇ)家(ㄐㄧㄚ)園(ㄩㄢˊ)的(ㄉㄜ˙)危(ㄨㄟ)機(ㄐㄧ)】',
+            context: '水(ㄕㄨㄟˇ)田(ㄊㄧㄢˊ)裡(ㄌㄧˇ)有(ㄧㄡˇ)一(ㄧˋ)條(ㄊㄧㄠˊ)紅(ㄏㄨㄥˊ)肚(ㄉㄨˋ)子(ㄗ˙)的(ㄉㄜ˙)小(ㄒㄧㄠˇ)蛇(ㄕㄜˊ)在(ㄗㄞˋ)找(ㄓㄠˇ)魚(ㄩˊ)吃(ㄔ)。',
+            q: '我(ㄨㄛˇ)們(ㄇㄣ˙)要(ㄧㄠˋ)怎(ㄗㄣˇ)麼(ㄇㄜ˙)保(ㄅㄠˇ)護(ㄏㄨˋ)這(ㄓㄜˋ)些(ㄒㄧㄝ)小(ㄒㄧㄠˇ)蛇(ㄕㄜˊ)呢(ㄋㄜ˙)？',
+            options: [
+                {t: '(A) 把(ㄅㄚˇ)水(ㄕㄨㄟˇ)溝(ㄍㄡ)變(ㄅㄧㄢˋ)成(ㄔㄥˊ)硬(ㄧㄥˋ)硬(ㄧㄥˋ)的(ㄉㄜ˙)水(ㄕㄨㄟˇ)泥(ㄋㄧˊ)', c:false}, 
+                {t: '(B) 保(ㄅㄠˇ)留(ㄌㄧㄡˊ)泥(ㄋㄧˊ)土(ㄊㄨˇ)，不(ㄅㄨˋ)亂(ㄌㄨㄢˋ)灑(ㄙㄚˇ)毒(ㄉㄨˊ)藥(ㄧㄠˋ)', c:true}
+            ],
+            ok: '太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！泥(ㄋㄧˊ)土(ㄊㄨˇ)讓(ㄖㄤˋ)小(ㄒㄧㄠˇ)蛇(ㄕㄜˊ)有(ㄧㄡˇ)地(ㄉㄧˋ)方(ㄈㄤ)躲(ㄉㄨㄛˇ)藏(ㄘㄤˊ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...水(ㄕㄨㄟˇ)泥(ㄋㄧˊ)牆(ㄑㄧㄤˊ)會(ㄏㄨㄟˋ)讓(ㄖㄤˋ)小(ㄒㄧㄠˇ)蛇(ㄕㄜˊ)沒(ㄇㄟˊ)有(ㄧㄡˇ)地(ㄉㄧˋ)方(ㄈㄤ)躲(ㄉㄨㄛˇ)起(ㄑㄧˇ)來(ㄌㄞˊ)喔(ㄛ)！'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🐟', location: '1樓(ㄌㄡˊ) 中(ㄓㄨㄥ)央(ㄧㄤ)「溪(ㄒㄧ)流(ㄌㄧㄡˊ)模(ㄇㄛˊ)型(ㄒㄧㄥˊ)」旁(ㄆㄤˊ)',
+            title: '【小(ㄒㄧㄠˇ)魚(ㄩˊ)的(ㄉㄜ˙)挑(ㄊㄧㄠ)戰(ㄓㄢˋ)】',
+            context: '櫻(ㄧㄥ)花(ㄏㄨㄚ)鉤(ㄍㄡ)吻(ㄨㄣˇ)鮭(ㄍㄨㄟ)想(ㄒㄧㄤˇ)游(ㄧㄡˊ)回(ㄏㄨㄟˊ)家(ㄐㄧㄚ)，卻(ㄑㄩㄝˋ)被(ㄅㄟˋ)高(ㄍㄠ)牆(ㄑㄧㄤˊ)擋(ㄉㄤˇ)住(ㄓㄨˋ)了(ㄌㄜ˙)。',
+            q: '我(ㄨㄛˇ)們(ㄇㄣ˙)可(ㄎㄜˇ)以(ㄧˇ)怎(ㄗㄣˇ)麼(ㄇㄜ˙)幫(ㄅㄤ)助(ㄓㄨˋ)小(ㄒㄧㄠˇ)魚(ㄩˊ)？',
+            options: [
+                {t: '(A) 幫(ㄅㄤ)小(ㄒㄧㄠˇ)魚(ㄩˊ)蓋(ㄍㄞˋ)階(ㄐㄧㄝ)梯(ㄊㄧ)狀(ㄓㄨㄤˋ)的(ㄉㄜ˙)魚(ㄩˊ)道(ㄉㄠˋ)', c:true}, 
+                {t: '(B) 用(ㄩㄥˋ)網(ㄨㄤˇ)子(ㄗ˙)把(ㄅㄚˇ)魚(ㄩˊ)撈(ㄌㄠ)起(ㄑㄧˇ)來(ㄌㄞˊ)', c:false}
+            ],
+            ok: '賓(ㄅㄧㄣ)果(ㄍㄨㄛˇ)！有(ㄧㄡˇ)了(ㄌㄜ˙)魚(ㄩˊ)道(ㄉㄠˋ)，小(ㄒㄧㄠˇ)魚(ㄩˊ)就(ㄐㄧㄡˋ)可(ㄎㄜˇ)以(ㄧˇ)自(ㄗˋ)己(ㄐㄧˇ)游(ㄧㄡˊ)回(ㄏㄨㄟˊ)家(ㄐㄧㄚ)了(ㄌㄜ˙)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...用(ㄩㄥˋ)撈(ㄌㄠ)的(ㄉㄜ˙)會(ㄏㄨㄟˋ)讓(ㄖㄤˋ)小(ㄒㄧㄠˇ)魚(ㄩˊ)受(ㄕㄡˋ)傷(ㄕㄤ)生(ㄕㄥ)病(ㄅㄧㄥˋ)喔(ㄛ)。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🦌', location: '1樓(ㄌㄡˊ) 西(ㄒㄧ)側(ㄘㄜˋ)「淺(ㄑㄧㄢˇ)山(ㄕㄢ)丘(ㄑㄧㄡ)陵(ㄌㄧㄥˊ)看(ㄎㄢˋ)板(ㄅㄢˇ)」',
+            title: '【山(ㄕㄢ)羌(ㄑㄧㄤ)的(ㄉㄜ˙)迷(ㄇㄧˊ)宮(ㄍㄨㄥ)】',
+            context: '小(ㄒㄧㄠˇ)山(ㄕㄢ)羌(ㄑㄧㄤ)在(ㄗㄞˋ)果(ㄍㄨㄛˇ)園(ㄩㄢˊ)裡(ㄌㄧˇ)迷(ㄇㄧˊ)路(ㄌㄨˋ)了(ㄌㄜ˙)，常(ㄔㄤˊ)常(ㄔㄤˊ)受(ㄕㄡˋ)傷(ㄕㄤ)。',
+            q: '要(ㄧㄠˋ)怎(ㄗㄣˇ)麼(ㄇㄜ˙)讓(ㄖㄤˋ)山(ㄕㄢ)羌(ㄑㄧㄤ)安(ㄢ)全(ㄑㄩㄢˊ)離(ㄌㄧˊ)開(ㄎㄞ)？',
+            options: [
+                {t: '(A) 用(ㄩㄥˋ)刺(ㄘˋ)刺(ㄘˋ)的(ㄉㄜ˙)鐵(ㄊㄧㄝˇ)絲(ㄙ)網(ㄨㄤˇ)圍(ㄨㄟˊ)起(ㄑㄧˇ)來(ㄌㄞˊ)', c:false}, 
+                {t: '(B) 用(ㄩㄥˋ)植(ㄓˊ)物(ㄨˋ)當(ㄉㄤ)作(ㄗㄨㄛˋ)綠(ㄌㄩˋ)色(ㄙㄜˋ)的(ㄉㄜ˙)圍(ㄨㄟˊ)牆(ㄑㄧㄤˊ)', c:true}
+            ],
+            ok: '沒(ㄇㄟˊ)錯(ㄘㄨㄛˋ)！綠(ㄌㄩˋ)色(ㄙㄜˋ)的(ㄉㄜ˙)圍(ㄨㄟˊ)牆(ㄑㄧㄤˊ)可(ㄎㄜˇ)以(ㄧˇ)讓(ㄖㄤˋ)山(ㄕㄢ)羌(ㄑㄧㄤ)安(ㄢ)心(ㄒㄧㄣ)走(ㄗㄡˇ)過(ㄍㄨㄛˋ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...鐵(ㄊㄧㄝˇ)絲(ㄙ)網(ㄨㄤˇ)會(ㄏㄨㄟˋ)讓(ㄖㄤˋ)小(ㄒㄧㄠˇ)山(ㄕㄢ)羌(ㄑㄧㄤ)卡(ㄎㄚˇ)住(ㄓㄨˋ)受(ㄕㄡˋ)傷(ㄕㄤ)喔(ㄛ)。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🐆', location: '1樓(ㄌㄡˊ) 正(ㄓㄥˋ)後(ㄏㄡˋ)方(ㄈㄤ)「石(ㄕˊ)虎(ㄏㄨˇ)多(ㄉㄨㄛ)媒(ㄇㄟˊ)體(ㄊㄧˇ)區(ㄑㄩ)」',
+            title: '【石(ㄕˊ)虎(ㄏㄨˇ)的(ㄉㄜ˙)回(ㄏㄨㄟˊ)家(ㄐㄧㄚ)路(ㄌㄨˋ)】',
+            context: '小(ㄒㄧㄠˇ)石(ㄕˊ)虎(ㄏㄨˇ)想(ㄒㄧㄤˇ)過(ㄍㄨㄛˋ)馬(ㄇㄚˇ)路(ㄌㄨˋ)，但(ㄉㄢˋ)是(ㄕˋ)車(ㄔㄜ)子(ㄗ˙)非(ㄈㄟ)常(ㄔㄤˊ)多(ㄉㄨㄛ)。',
+            q: '我(ㄨㄛˇ)們(ㄇㄣ˙)要(ㄧㄠˋ)怎(ㄗㄣˇ)麼(ㄇㄜ˙)保(ㄅㄠˇ)護(ㄏㄨˋ)牠(ㄊㄚ)？',
+            options: [
+                {t: '(A) 蓋(ㄍㄞˋ)動(ㄉㄨㄥˋ)物(ㄨˋ)專(ㄓㄨㄢ)用(ㄩㄥˋ)的(ㄉㄜ˙)天(ㄊㄧㄢ)橋(ㄑㄧㄠˊ)或(ㄏㄨㄛˋ)地(ㄉㄧˋ)道(ㄉㄠˋ)', c:true}, 
+                {t: '(B) 放(ㄈㄤˋ)很(ㄏㄣˇ)大(ㄉㄚˋ)聲(ㄕㄥ)的(ㄉㄜ˙)音(ㄧㄣ)樂(ㄩㄝˋ)嚇(ㄒㄧㄚˋ)跑(ㄆㄠˇ)牠(ㄊㄚ)', c:false}
+            ],
+            ok: '完(ㄨㄢˊ)美(ㄇㄟˇ)的(ㄉㄜ˙)解(ㄐㄧㄝˇ)答(ㄉㄚˊ)！有(ㄧㄡˇ)了(ㄌㄜ˙)天(ㄊㄧㄢ)橋(ㄑㄧㄠˊ)，石(ㄕˊ)虎(ㄏㄨˇ)就(ㄐㄧㄡˋ)不(ㄅㄨˋ)用(ㄩㄥˋ)走(ㄗㄡˇ)在(ㄗㄞˋ)危(ㄨㄟ)險(ㄒㄧㄢˇ)的(ㄉㄜ˙)馬(ㄇㄚˇ)路(ㄌㄨˋ)上(ㄕㄤˋ)了(ㄌㄜ˙)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...嚇(ㄒㄧㄚˋ)跑(ㄆㄠˇ)牠(ㄊㄚ)可(ㄎㄜˇ)能(ㄋㄥˊ)會(ㄏㄨㄟˋ)讓(ㄖㄤˋ)石(ㄕˊ)虎(ㄏㄨˇ)因(ㄧㄣ)為(ㄨㄟˋ)害(ㄏㄞˋ)怕(ㄆㄚˋ)而(ㄦˊ)亂(ㄌㄨㄢˋ)衝(ㄔㄨㄥ)喔(ㄛ)！'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🦉', location: '1樓(ㄌㄡˊ) 入(ㄖㄨˋ)口(ㄎㄡˇ)旁(ㄆㄤˊ)「鳥(ㄋㄧㄠˇ)類(ㄌㄟˋ)保(ㄅㄠˇ)育(ㄩˋ)區(ㄑㄩ)」',
+            title: '【貓(ㄇㄠ)頭(ㄊㄡˊ)鷹(ㄧㄥ)捕(ㄅㄨˇ)鼠(ㄕㄨˇ)官(ㄍㄨㄢ)】',
+            context: '貓(ㄇㄠ)頭(ㄊㄡˊ)鷹(ㄧㄥ)想(ㄒㄧㄤˇ)在(ㄗㄞˋ)晚(ㄨㄢˇ)上(ㄕㄤˋ)幫(ㄅㄤ)農(ㄋㄨㄥˊ)夫(ㄈㄨ)抓(ㄓㄨㄚ)老(ㄌㄠˇ)鼠(ㄕㄨˇ)。',
+            q: '我(ㄨㄛˇ)們(ㄇㄣ˙)可(ㄎㄜˇ)以(ㄧˇ)為(ㄨㄟˋ)貓(ㄇㄠ)頭(ㄊㄡˊ)鷹(ㄧㄥ)準(ㄓㄨㄣˇ)備(ㄅㄟˋ)什(ㄕㄣˊ)麼(ㄇㄜ˙)？',
+            options: [
+                {t: '(A) 架(ㄐㄧㄚˋ)設(ㄕㄜˋ)高(ㄍㄠ)高(ㄍㄠ)的(ㄉㄜ˙)木(ㄇㄨˋ)架(ㄐㄧㄚˋ)讓(ㄖㄤˋ)牠(ㄊㄚ)停(ㄊㄧㄥˊ)', c:true}, 
+                {t: '(B) 噴(ㄆㄣ)灑(ㄙㄚˇ)很(ㄏㄣˇ)多(ㄉㄨㄛ)有(ㄧㄡˇ)毒(ㄉㄨˊ)的(ㄉㄜ˙)農(ㄋㄨㄥˊ)藥(ㄧㄠˋ)', c:false}
+            ],
+            ok: '太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！高(ㄍㄠ)高(ㄍㄠ)的(ㄉㄜ˙)木(ㄇㄨˋ)架(ㄐㄧㄚˋ)可(ㄎㄜˇ)以(ㄧˇ)讓(ㄖㄤˋ)貓(ㄇㄠ)頭(ㄊㄡˊ)鷹(ㄧㄥ)休(ㄒㄧㄡ)息(ㄒㄧˊ)跟(ㄍㄣ)找(ㄓㄠˇ)老(ㄌㄠˇ)鼠(ㄕㄨˇ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...毒(ㄉㄨˊ)藥(ㄧㄠˋ)會(ㄏㄨㄟˋ)讓(ㄖㄤˋ)貓(ㄇㄠ)頭(ㄊㄡˊ)鷹(ㄧㄥ)跟(ㄍㄣ)著(ㄓㄜ˙)中(ㄓㄨㄥˋ)毒(ㄉㄨˊ)生(ㄕㄥ)病(ㄅㄧㄥˋ)喔(ㄛ)。'
+        },
+        
+        { type: 'transition', floor: 'B1 常設展區', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) B1 展(ㄓㄢˇ)區(ㄑㄩ)', msg: '走(ㄗㄡˇ)吧(ㄅㄚ˙)！我(ㄨㄛˇ)們(ㄇㄣ˙)往(ㄨㄤˇ)樓(ㄌㄡˊ)下(ㄒㄧㄚˋ)出(ㄔㄨ)發(ㄈㄚ)。' },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🧱', location: 'B1 「地(ㄉㄧˋ)層(ㄘㄥˊ)標(ㄅㄧㄠ)本(ㄅㄣˇ)牆(ㄑㄧㄤˊ)」',
+            title: '【紅(ㄏㄨㄥˊ)土(ㄊㄨˇ)家(ㄐㄧㄚ)園(ㄩㄢˊ)的(ㄉㄜ˙)秘(ㄇㄧˋ)密(ㄇㄧˋ)】',
+            context: '石(ㄕˊ)虎(ㄏㄨˇ)想(ㄒㄧㄤˇ)在(ㄗㄞˋ)山(ㄕㄢ)上(ㄕㄤˋ)挖(ㄨㄚ)一(ㄧˊ)個(ㄍㄜ˙)不(ㄅㄨˋ)會(ㄏㄨㄟˋ)塌(ㄊㄚ)下(ㄒㄧㄚˋ)來(ㄌㄞˊ)的(ㄉㄜ˙)家(ㄐㄧㄚ)。',
+            q: '哪(ㄋㄚˇ)一(ㄧˋ)種(ㄓㄨㄥˇ)土(ㄊㄨˇ)地(ㄉㄧˋ)比(ㄅㄧˇ)較(ㄐㄧㄠˋ)安(ㄢ)全(ㄑㄩㄢˊ)？',
+            options: [
+                {t: '(A) 鬆(ㄙㄨㄥ)鬆(ㄙㄨㄥ)滑(ㄏㄨㄚˊ)滑(ㄏㄨㄚˊ)的(ㄉㄜ˙)石(ㄕˊ)頭(ㄊㄡˊ)堆(ㄉㄨㄟ)', c:false}, 
+                {t: '(B) 黏(ㄋㄧㄢˊ)黏(ㄋㄧㄢˊ)緊(ㄐㄧㄣˇ)緊(ㄐㄧㄣˇ)的(ㄉㄜ˙)紅(ㄏㄨㄥˊ)土(ㄊㄨˇ)地(ㄉㄧˋ)', c:true}
+            ],
+            ok: '選(ㄒㄩㄢˇ)得(ㄉㄜˊ)好(ㄏㄠˇ)！黏(ㄋㄧㄢˊ)黏(ㄋㄧㄢˊ)的(ㄉㄜ˙)紅(ㄏㄨㄥˊ)土(ㄊㄨˇ)不(ㄅㄨˋ)怕(ㄆㄚˋ)下(ㄒㄧㄚˋ)雨(ㄩˇ)，家(ㄐㄧㄚ)才(ㄘㄞˊ)不(ㄅㄨˋ)會(ㄏㄨㄟˋ)垮(ㄎㄨㄚˇ)掉(ㄉㄧㄠˋ)喔(ㄛ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...鬆(ㄙㄨㄥ)鬆(ㄙㄨㄥ)的(ㄉㄜ˙)石(ㄕˊ)頭(ㄊㄡˊ)堆(ㄉㄨㄟ)下(ㄒㄧㄚˋ)雨(ㄩˇ)天(ㄊㄧㄢ)很(ㄏㄣˇ)容(ㄖㄨㄥˊ)易(ㄧˋ)塌(ㄊㄚ)下(ㄒㄧㄚˋ)來(ㄌㄞˊ)！'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '⛰️', location: 'B1 「立(ㄌㄧˋ)體(ㄊㄧˇ)沙(ㄕㄚ)盤(ㄆㄢˊ)」旁(ㄆㄤˊ)',
+            title: '【長(ㄓㄤˇ)高(ㄍㄠ)又(ㄧㄡˋ)變(ㄅㄧㄢˋ)瘦(ㄕㄡˋ)】',
+            context: '火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)看(ㄎㄢˋ)起(ㄑㄧˇ)來(ㄌㄞˊ)尖(ㄐㄧㄢ)尖(ㄐㄧㄢ)瘦(ㄕㄡˋ)瘦(ㄕㄡˋ)的(ㄉㄜ˙)。',
+            q: '是(ㄕˋ)什(ㄕㄣˊ)麼(ㄇㄜ˙)原(ㄩㄢˊ)因(ㄧㄣ)造(ㄗㄠˋ)成(ㄔㄥˊ)的(ㄉㄜ˙)呢(ㄋㄜ˙)？',
+            options: [
+                {t: '(A) 地(ㄉㄧˋ)震(ㄓㄣˋ)和(ㄏㄢˋ)大(ㄉㄚˋ)雨(ㄩˇ)沖(ㄔㄨㄥ)刷(ㄕㄨㄚ)', c:true}, 
+                {t: '(B) 人(ㄖㄣˊ)類(ㄌㄟˋ)把(ㄅㄚˇ)石(ㄕˊ)頭(ㄊㄡˊ)搬(ㄅㄢ)走(ㄗㄡˇ)了(ㄌㄜ˙)', c:false}
+            ],
+            ok: '沒(ㄇㄟˊ)錯(ㄘㄨㄛˋ)！大(ㄉㄚˋ)自(ㄗˋ)然(ㄖㄢˊ)的(ㄉㄜ˙)力(ㄌㄧˋ)量(ㄌㄧㄤˋ)讓(ㄖㄤˋ)火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)一(ㄧˊ)直(ㄓˊ)在(ㄗㄞˋ)變(ㄅㄧㄢˋ)化(ㄏㄨㄚˋ)喔(ㄛ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...這(ㄓㄜˋ)是(ㄕˋ)大(ㄉㄚˋ)自(ㄗˋ)然(ㄖㄢˊ)下(ㄒㄧㄚˋ)大(ㄉㄚˋ)雨(ㄩˇ)的(ㄉㄜ˙)關(ㄍㄨㄢ)係(ㄒㄧˋ)，不(ㄅㄨˋ)是(ㄕˋ)人(ㄖㄣˊ)類(ㄌㄟˋ)搬(ㄅㄢ)走(ㄗㄡˇ)的(ㄉㄜ˙)。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🐀', location: 'B1 「生(ㄕㄥ)態(ㄊㄞˋ)小(ㄒㄧㄠˇ)劇(ㄐㄩˋ)場(ㄔㄤˇ)」左(ㄗㄨㄛˇ)側(ㄘㄜˋ)',
+            title: '【半(ㄅㄢˋ)夜(ㄧㄝˋ)肚(ㄉㄨˋ)子(ㄗ˙)餓(ㄜˋ)】',
+            context: '半(ㄅㄢˋ)夜(ㄧㄝˋ)石(ㄕˊ)虎(ㄏㄨˇ)肚(ㄉㄨˋ)子(ㄗ˙)餓(ㄜˋ)了(ㄌㄜ˙)，要(ㄧㄠˋ)找(ㄓㄠˇ)東(ㄉㄨㄥ)西(ㄒㄧ)吃(ㄔ)。',
+            q: '牠(ㄊㄚ)吃(ㄔ)什(ㄕㄣˊ)麼(ㄇㄜ˙)最(ㄗㄨㄟˋ)安(ㄢ)全(ㄑㄩㄢˊ)？',
+            options: [
+                {t: '(A) 抓(ㄓㄨㄚ)田(ㄊㄧㄢˊ)裡(ㄌㄧˇ)的(ㄉㄜ˙)野(ㄧㄝˇ)鼠(ㄕㄨˇ)', c:true}, 
+                {t: '(B) 偷(ㄊㄡ)跑(ㄆㄠˇ)進(ㄐㄧㄣˋ)雞(ㄐㄧ)舍(ㄕㄜˋ)吃(ㄔ)雞(ㄐㄧ)', c:false}
+            ],
+            ok: '聰(ㄘㄨㄥ)明(ㄇㄧㄥˊ)的(ㄉㄜ˙)選(ㄒㄩㄢˇ)擇(ㄗㄜˊ)！吃(ㄔ)野(ㄧㄝˇ)鼠(ㄕㄨˇ)還(ㄏㄞˊ)可(ㄎㄜˇ)以(ㄧˇ)幫(ㄅㄤ)農(ㄋㄨㄥˊ)夫(ㄈㄨ)除(ㄔㄨˊ)害(ㄏㄞˋ)呢(ㄋㄜ˙)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...雞(ㄐㄧ)舍(ㄕㄜˋ)旁(ㄆㄤˊ)邊(ㄅㄧㄢ)很(ㄏㄣˇ)危(ㄨㄟ)險(ㄒㄧㄢˇ)，石(ㄕˊ)虎(ㄏㄨˇ)可(ㄎㄜˇ)能(ㄋㄥˊ)會(ㄏㄨㄟˋ)被(ㄅㄟˋ)夾(ㄐㄧㄚˊ)住(ㄓㄨˋ)受(ㄕㄡˋ)傷(ㄕㄤ)。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🕵️', location: 'B1 「峽(ㄒㄧㄚˊ)谷(ㄍㄨˇ)大(ㄉㄚˋ)照(ㄓㄠˋ)片(ㄆㄧㄢˋ)」牆(ㄑㄧㄤˊ)',
+            title: '【山(ㄕㄢ)谷(ㄍㄨˇ)捉(ㄓㄨㄛ)迷(ㄇㄧˊ)藏(ㄘㄤˊ)】',
+            context: '火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)裡(ㄌㄧˇ)面(ㄇㄧㄢˋ)有(ㄧㄡˇ)很(ㄏㄣˇ)多(ㄉㄨㄛ)深(ㄕㄣ)深(ㄕㄣ)的(ㄉㄜ˙)溝(ㄍㄡ)槽(ㄘㄠˊ)。',
+            q: '這(ㄓㄜˋ)些(ㄒㄧㄝ)地(ㄉㄧˋ)方(ㄈㄤ)對(ㄉㄨㄟˋ)石(ㄕˊ)虎(ㄏㄨˇ)有(ㄧㄡˇ)什(ㄕㄣˊ)麼(ㄇㄜ˙)好(ㄏㄠˇ)處(ㄔㄨˋ)？',
+            options: [
+                {t: '(A) 有(ㄧㄡˇ)很(ㄏㄣˇ)多(ㄉㄨㄛ)水(ㄕㄨㄟˇ)果(ㄍㄨㄛˇ)可(ㄎㄜˇ)以(ㄧˇ)吃(ㄔ)', c:false}, 
+                {t: '(B) 可(ㄎㄜˇ)以(ㄧˇ)當(ㄉㄤ)作(ㄗㄨㄛˋ)安(ㄢ)全(ㄑㄩㄢˊ)躲(ㄉㄨㄛˇ)藏(ㄘㄤˊ)的(ㄉㄜ˙)地(ㄉㄧˋ)方(ㄈㄤ)', c:true}
+            ],
+            ok: '正(ㄓㄥˋ)確(ㄑㄩㄝˋ)！這(ㄓㄜˋ)些(ㄒㄧㄝ)地(ㄉㄧˋ)方(ㄈㄤ)可(ㄎㄜˇ)以(ㄧˇ)保(ㄅㄠˇ)護(ㄏㄨˋ)石(ㄕˊ)虎(ㄏㄨˇ)不(ㄅㄨˋ)被(ㄅㄟˋ)壞(ㄏㄨㄞˋ)人(ㄖㄣˊ)發(ㄈㄚ)現(ㄒㄧㄢˋ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...裡(ㄌㄧˇ)面(ㄇㄧㄢˋ)沒(ㄇㄟˊ)有(ㄧㄡˇ)水(ㄕㄨㄟˇ)果(ㄍㄨㄛˇ)，但(ㄉㄢˋ)是(ㄕˋ)是(ㄕˋ)躲(ㄉㄨㄛˇ)貓(ㄇㄠ)貓(ㄇㄠ)的(ㄉㄜ˙)好(ㄏㄠˇ)地(ㄉㄧˋ)方(ㄈㄤ)喔(ㄛ)！'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🌊', location: 'B1 「地(ㄉㄧˋ)圖(ㄊㄨˊ)導(ㄉㄠˇ)覽(ㄌㄢˇ)區(ㄑㄩ)」前(ㄑㄧㄢˊ)',
+            title: '【大(ㄉㄚˋ)石(ㄕˊ)頭(ㄊㄡˊ)的(ㄉㄜ˙)家(ㄐㄧㄚ)】',
+            context: '火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)旁(ㄆㄤˊ)邊(ㄅㄧㄢ)有(ㄧㄡˇ)一(ㄧˋ)條(ㄊㄧㄠˊ)大(ㄉㄚˋ)大(ㄉㄚˋ)的(ㄉㄜ˙)河(ㄏㄜˊ)流(ㄌㄧㄡˊ)。',
+            q: '你(ㄋㄧˇ)知(ㄓ)道(ㄉㄠˋ)這(ㄓㄜˋ)是(ㄕˋ)哪(ㄋㄚˇ)一(ㄧˋ)條(ㄊㄧㄠˊ)河(ㄏㄜˊ)嗎(ㄇㄚ˙)？',
+            options: [
+                {t: '(A) 大(ㄉㄚˋ)安(ㄢ)溪(ㄒㄧ)', c:true}, 
+                {t: '(B) 淡(ㄉㄢˋ)水(ㄕㄨㄟˇ)河(ㄏㄜˊ)', c:false}
+            ],
+            ok: '答(ㄉㄚˊ)對(ㄉㄨㄟˋ)了(ㄌㄜ˙)！這(ㄓㄜˋ)裡(ㄌㄧˇ)不(ㄅㄨˋ)只(ㄓˇ)有(ㄧㄡˇ)水(ㄕㄨㄟˇ)，還(ㄏㄞˊ)是(ㄕˋ)動(ㄉㄨㄥˋ)物(ㄨˋ)們(ㄇㄣ˙)的(ㄉㄜ˙)高(ㄍㄠ)速(ㄙㄨˋ)公(ㄍㄨㄥ)路(ㄌㄨˋ)喔(ㄛ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...淡(ㄉㄢˋ)水(ㄕㄨㄟˇ)河(ㄏㄜˊ)在(ㄗㄞˋ)台(ㄊㄞˊ)北(ㄅㄟˇ)，火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)旁(ㄆㄤˊ)邊(ㄅㄧㄢ)的(ㄉㄜ˙)是(ㄕˋ)大(ㄉㄚˋ)安(ㄢ)溪(ㄒㄧ)啦(ㄌㄚ˙)。'
+        },
+        
+        { type: 'transition', floor: '2F 接待大廳', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 2 樓(ㄌㄡˊ)', msg: '挑(ㄊㄧㄠ)戰(ㄓㄢˋ)要(ㄧㄠˋ)結(ㄐㄧㄝˊ)束(ㄕㄨˋ)了(ㄌㄜ˙)！回(ㄏㄨㄟˊ)到(ㄉㄠˋ) 2 樓(ㄌㄡˊ)大(ㄉㄚˋ)廳(ㄊㄧㄥ)吧(ㄅㄚ˙)。' },
+        { 
+            type: 'quiz', floor: '2F 接待大廳', emoji: '🪵', location: '2樓(ㄌㄡˊ) 大(ㄉㄚˋ)廳(ㄊㄧㄥ)「文(ㄨㄣˊ)創(ㄔㄨㄤˋ)展(ㄓㄢˇ)示(ㄕˋ)櫃(ㄍㄨㄟˋ)」旁(ㄆㄤˊ)',
+            title: '【保(ㄅㄠˇ)護(ㄏㄨˋ)大(ㄉㄚˋ)樹(ㄕㄨˋ)】',
+            context: '我(ㄨㄛˇ)們(ㄇㄣ˙)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)換(ㄏㄨㄢˋ)到(ㄉㄠˋ)的(ㄉㄜ˙)紀(ㄐㄧˋ)念(ㄋㄧㄢˋ)品(ㄆㄧㄣˇ)很(ㄏㄣˇ)環(ㄏㄨㄢˊ)保(ㄅㄠˇ)。',
+            q: '它(ㄊㄚ)是(ㄕˋ)怎(ㄗㄣˇ)麼(ㄇㄜ˙)做(ㄗㄨㄛˋ)成(ㄔㄥˊ)的(ㄉㄜ˙)呢(ㄋㄜ˙)？',
+            options: [
+                {t: '(A) 用(ㄩㄥˋ)不(ㄅㄨˋ)到(ㄉㄠˋ)的(ㄉㄜ˙)廢(ㄈㄟˋ)棄(ㄑㄧˋ)木(ㄇㄨˋ)材(ㄘㄞˊ)做(ㄗㄨㄛˋ)的(ㄉㄜ˙)', c:true}, 
+                {t: '(B) 砍(ㄎㄢˇ)掉(ㄉㄧㄠˋ)森(ㄙㄣ)林(ㄌㄧㄣˊ)裡(ㄌㄧˇ)的(ㄉㄜ˙)大(ㄉㄚˋ)樹(ㄕㄨˋ)做(ㄗㄨㄛˋ)的(ㄉㄜ˙)', c:false}
+            ],
+            ok: '完(ㄨㄢˊ)全(ㄑㄩㄢˊ)正(ㄓㄥˋ)確(ㄑㄩㄝˋ)！廢(ㄈㄟˋ)物(ㄨˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)就(ㄐㄧㄡˋ)不(ㄅㄨˋ)用(ㄩㄥˋ)去(ㄑㄩˋ)砍(ㄎㄢˇ)樹(ㄕㄨˋ)，地(ㄉㄧˋ)球(ㄑㄧㄡˊ)好(ㄏㄠˇ)開(ㄎㄞ)心(ㄒㄧㄣ)！',
+            tip: '其(ㄑㄧˊ)實(ㄕˊ)...砍(ㄎㄢˇ)樹(ㄕㄨˋ)會(ㄏㄨㄟˋ)破(ㄆㄛˋ)壞(ㄏㄨㄞˋ)環(ㄏㄨㄢˊ)境(ㄐㄧㄥˋ)，我(ㄨㄛˇ)們(ㄇㄣ˙)是(ㄕˋ)用(ㄩㄥˋ)廢(ㄈㄟˋ)棄(ㄑㄧˋ)的(ㄉㄜ˙)木(ㄇㄨˋ)頭(ㄊㄡˊ)做(ㄗㄨㄛˋ)的(ㄉㄜ˙)喔(ㄛ)！'
+        }
     ],
+
+    // 【進階關卡】：針對國高中生/成人，探討學理與政策 (保留原文字)
     advanced: [
-        ...generateFloorQuestions('1F 綠網特展區', 5, '進階考驗'),
-        ...generateFloorQuestions('B1 常設展區', 5, '進階考驗'),
-        ...generateFloorQuestions('2F 接待大廳', 1, '進階考驗')
+        { type: 'transition', floor: '1F 綠網特展區', title: '進入 1F 綠網特展區', msg: '準備開始進階生態挑戰，請仔細觀察！' },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '💰', location: '1樓 特展區入口「綠網政策導覽牌」前',
+            title: '【綠網經濟學】',
+            context: '林業保育署推動綠網，希望建立人與自然共生的里山環境。但友善農作往往產量較少，導致農民初期生計受影響。',
+            q: '為了讓計畫能永續推存，哪種機制最能提供農民長期的經濟誘因？',
+            options: [
+                {t: '(A) 由政府無限期補貼農民所有的產量損失', c:false}, 
+                {t: '(B) 推動「生態服務給付」，依維護棲地的成果給予獎勵金', c:true}
+            ],
+            ok: '賓果！生態服務給付（PES）是將生態價值內化為經濟誘因。政府依農民「守護棲地」的行為給付津貼，讓生態保護成為可獲利的農產。',
+            tip: '其實...無限期補貼產量會造成財政負擔，且無法鼓勵主動保育。生態給付才能創造雙贏。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🦉', location: '1樓 特展區東側「淺山草生地碳匯看板」旁',
+            title: '【草鴞的無聲碳匯】',
+            context: '研究發現，健康的草生地生態系，其土壤與植物根系的「碳匯」能力其實不亞於次生林。',
+            q: '草鴞作為該棲地的頂級掠食者，對維持「碳匯功能」有何關鍵作用？',
+            options: [
+                {t: '(A) 牠的大量糞便可以成為草生地最主要的碳肥來源', c:false}, 
+                {t: '(B) 牠能控制鼠類數量，防止野鼠過度啃食植物根系導致碳素流失', c:true}
+            ],
+            ok: '正確！這稱為「營養階層串聯」。草鴞控制了老鼠數量，間接保護植被完整性與土壤結構，穩固了草生地脆弱的固碳能力。',
+            tip: '其實...鳥類糞便的固碳量極少。維持食物鏈平衡，保護植物根系才是固碳的關鍵喔。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🧬', location: '1樓 特展區正後方「廊道串聯動態地圖」前',
+            title: '【破碎棲地的基因流失】',
+            context: '高車流量的國道，將當地的石虎族群硬生生切成了「以東」與「以西」兩個互不相通的小族群。',
+            q: '從長期的群體遺傳學來看，這種棲地破碎化對石虎的最大威脅是什麼？',
+            options: [
+                {t: '(A) 兩側石虎因為吃不到對面的食物而集體餓死', c:false}, 
+                {t: '(B) 阻斷基因交流，導致高度近親交配與「近交衰退」', c:true}
+            ],
+            ok: '完全正確！小族群若長期無法與外族群交流，會導致有害隱性基因顯現，降低繁殖率與免疫力。所以必須建立動物通道。',
+            tip: '其實...石虎兩側的領地內通常仍有食物，真正的危機是無法與遠方血緣交配導致的基因窄化。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🐸', location: '1樓 特展區中央「友善野溪生態工法模型」',
+            title: '【野溪環境的水網陷阱】',
+            context: '為了防洪，許多野溪被改成垂直陡峭、底部平滑的水泥護岸，導致野生動物跌落後無法逃脫。',
+            q: '在綠網的野溪修復中，哪種「生態工法」能兼顧防災與生物通行？',
+            options: [
+                {t: '(A) 改用乾砌石或石籠，並每隔固定距離設置「動物逃生坡道」', c:true}, 
+                {t: '(B) 將野溪兩側全部加蓋封死，防止動物靠近跌落', c:false}
+            ],
+            ok: '答對了！砌石具有天然縫隙供兩棲類棲息，而增設逃生坡道能讓跌落的石虎或小動物順利爬回岸上，避免溺斃。',
+            tip: '其實...野溪全面加蓋會徹底毀滅水域生態系，讓溪流變成毫無生機的排水溝。'
+        },
+        { 
+            type: 'quiz', floor: '1F 綠網特展區', emoji: '🥀', location: '1樓 特展區西側「外來入侵種防治牆」',
+            title: '【外來種與綠網防線】',
+            context: '外來種植物「小花蔓澤蘭」正以驚人速度攀爬，將整片里山灌木叢像蓋毯子一樣悶死。',
+            q: '小花蔓澤蘭的蔓延，會如何透過連鎖反應危害到淺山石虎？',
+            options: [
+                {t: '(A) 石虎會因為誤食小花蔓澤蘭而中毒身亡', c:false}, 
+                {t: '(B) 悶死原生植物，導致昆蟲草食動物減少，石虎最終失去獵物', c:true}
+            ],
+            ok: '沒錯！這就是生態系底層瓦解引發的災難。外來種破壞了植物多樣性，導致鼠類小鳥失去食物，最終讓頂層的石虎面臨食物荒。',
+            tip: '其實...石虎是肉食動物，不會去吃小花蔓澤蘭。真正的危機是食物鏈崩潰喔。'
+        },
+
+        { type: 'transition', floor: 'B1 常設展區', title: '進入 B1 常設展區', msg: '即將進入地質與氣候的嚴酷考驗。' },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🌧️', location: 'B1 「火炎山惡地侵蝕機制模型」',
+            title: '【雨水的惡地雕刻術】',
+            context: '火炎山屬於「惡地」地形，其陡峭的侵蝕溝谷、尖銳的峰脊讓人震撼。',
+            q: '火炎山的顆粒粗大，為什麼還會形成如此尖銳的蝕溝，而不是塌成平緩山坡？',
+            options: [
+                {t: '(A) 每當突發性暴雨，雨水會沿著紅土裂縫進行強烈的「下切侵蝕」', c:true}, 
+                {t: '(B) 火炎山頂部長期受強烈焚風吹拂，將沙塵吹成尖銳形狀', c:false}
+            ],
+            ok: '選得好！紅土黏性高但易受溶蝕。每當夏秋「突發性暴雨」傾盆而下，集中水流展現恐怖的下切力，將破碎地質雕刻成深邃沖蝕溝。',
+            tip: '其實...台灣的風化侵蝕主要以「水力」為主，焚風並不足以雕刻出如此巨大的峽谷。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '💥', location: 'B1 「地下水與地滑測試裝置」',
+            title: '【地下水與山崩的隱形推手】',
+            context: '地質學家指出，除了表面雨水沖刷，山體內部的「地下水」才是引發山崩的隱形殺手。',
+            q: '當大量雨水滲入火炎山的土層時，地下水是如何引發山崩的？',
+            options: [
+                {t: '(A) 雨水讓礫石層受熱膨脹，將紅土層向外推擠', c:false}, 
+                {t: '(B) 水壓上升產生「孔隙水壓」，降低了土層之間的摩擦力與抗剪強度', c:true}
+            ],
+            ok: '完全正確！當水充滿孔隙，多餘的水壓會把原本緊實的土石顆粒「撐開」，導致山壁失去支撐力，引發大規模土石崩塌。',
+            tip: '其實...雨水是冷的，並不會讓礫石受熱膨脹。關鍵在於物理學上的「水壓」降低了摩擦力。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🚧', location: 'B1 「生態邊際效應解說牌」',
+            title: '【邊際效應與石虎防線】',
+            context: '石虎偏好生活在「林緣地帶」。然而果園與道路無限制擴張，導致森林內部出現越來越多「人造邊際」。',
+            q: '人造邊際的增加，對石虎會帶來什麼潛在的致命風險？',
+            options: [
+                {t: '(A) 增加與遊蕩犬貓接觸機率，導致染病或遭遇路殺', c:true}, 
+                {t: '(B) 石虎會因為找不到森林內部深處的昆蟲而餓死', c:false}
+            ],
+            ok: '答對了！人造邊際增加意味著棲地高度零碎。這逼得石虎必須頻繁跨越道路，大幅增加遭犬隻攻擊、路殺及感染傳染病的機率。',
+            tip: '其實...石虎主要捕食老鼠與野兔，並非以昆蟲為主食。真正的危機來自人類社會的干擾。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🌉', location: 'B1 「大安溪流域立體沙盤」前',
+            title: '【河床上的夜間高速公路】',
+            context: '相機紀錄顯示，許多石虎會利用大安溪寬闊的旱季河床作為移動到下游或對岸的「生態廊道」。',
+            q: '哪一種人為干擾最容易切斷這條石虎的夜間高速公路？',
+            options: [
+                {t: '(A) 溪流在雨季時的正常暴漲與淹水', c:false}, 
+                {t: '(B) 非法傾倒廢棄物、高強度夜間照明與過度水泥化的防洪牆', c:true}
+            ],
+            ok: '沒錯！自然淹水動物會避開。但垂直水泥牆會阻斷上下河岸動線，強光更會驅離夜行性石虎，讓這條天然廊道徹底失效。',
+            tip: '其實...大自然的季節性洪水是正常現象，野生動物自有生存之道。人造設施才是永久的阻礙。'
+        },
+        { 
+            type: 'quiz', floor: 'B1 常設展區', emoji: '🌱', location: 'B1 「惡地生態演替展示櫥窗」',
+            title: '【惡地的演替與微氣候】',
+            context: '火炎山沖蝕谷白天陽光直射極高溫，且極度乾燥，植物「生態演替」速度極為緩慢。',
+            q: '在如此惡劣環境下，哪種植物最有可能成為開疆闢土的「先驅物種」？',
+            options: [
+                {t: '(A) 需要深厚肥沃黑土的闊葉喬木（如樟樹）', c:false}, 
+                {t: '(B) 耐乾旱、根系發達的草本植物（如五節芒、白茅）', c:true}
+            ],
+            ok: '正確！先驅植物必須極度耐旱與抗崩塌。五節芒能優先在礫石中落腳，穩固土砂並累積有機質，為未來的林相打下基礎。',
+            tip: '其實...大樹需要深厚穩定的土壤。在隨時崩塌的惡地中，只能由強韌的草本植物打頭陣喔。'
+        },
+
+        { type: 'transition', floor: '2F 接待大廳', title: '進入 2F 接待大廳', msg: '恭喜抵達終點！準備進行最後一題的永續結算。' },
+        { 
+            type: 'quiz', floor: '2F 接待大廳', emoji: '♻️', location: '2樓 「全生命週期碳足跡看板」',
+            title: '【循環經濟的在地碳足跡】',
+            context: '在推動利用三義木雕廢材再製工藝品時，科學家會使用「生命週期評估（LCA）」來計算碳足跡。',
+            q: '為何使用「在地廢木渣」在碳足跡上，會遠低於使用「國外進口環保塑料」？',
+            options: [
+                {t: '(A) 因為木渣本身在燃燒時不會產生任何二氧化碳', c:false}, 
+                {t: '(B) 因為它大幅縮短了原料收集與跨國海運的間接運輸碳排', c:true}
+            ],
+            ok: '精準的減碳觀念！在地循環經濟最大優勢就是「減免運輸碳排」。進口原料即便環保，跨國海運產生的化石燃料碳排往往讓減碳效果大打折扣！',
+            tip: '其實...木頭燃燒還是會產生二氧化碳。真正的減碳關鍵在於省去了龐大的「跨國運輸碳足跡」。'
+        }
     ]
 };
+
+// -- 注音轉換器 (將字(音)轉為 HTML Ruby 標籤) --
+function parseZhuyin(text) {
+    if(!text) return '';
+    // 匹配: 一個中文字 + 括號內的注音 (包含聲調)
+    return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+}
+
+// 載入時將 Basic 題庫的文字進行注音轉換
+quizDatabase.basic.forEach(q => {
+    if(q.title) q.title = parseZhuyin(q.title);
+    if(q.context) q.context = parseZhuyin(q.context);
+    if(q.q) q.q = parseZhuyin(q.q);
+    if(q.options) {
+        q.options[0].t = parseZhuyin(q.options[0].t);
+        q.options[1].t = parseZhuyin(q.options[1].t);
+    }
+    if(q.ok) q.ok = parseZhuyin(q.ok);
+    if(q.tip) q.tip = parseZhuyin(q.tip);
+    if(q.location) q.location = parseZhuyin(q.location);
+    if(q.msg) q.msg = parseZhuyin(q.msg);
+});
 
 // ==========================================
 // 2. 全域變數狀態控管
@@ -279,7 +546,7 @@ let currentDifficulty = '';
 let currentGameData = [];
 let gameFinished = false; 
 let carbonCalculated = false; 
-let penaltyTimer = null; // 用來記錄 10 秒計時器
+let penaltyTimer = null; 
 
 // ==========================================
 // 3. 畫面控制邏輯
@@ -298,27 +565,27 @@ window.onload = function() {
     }
 
     function updateUI() {
-        if(penaltyTimer) clearInterval(penaltyTimer); // 切換題目時清除潛在的計時器
+        if(penaltyTimer) clearInterval(penaltyTimer); 
         const data = currentGameData[step];
         const topTitle = document.getElementById('top-title');
         const topProgress = document.getElementById('top-progress');
 
         if(data.type === 'transition') {
             showScreen('screen-transition');
-            document.getElementById('trans-title').innerText = data.title;
-            document.getElementById('trans-msg').innerText = data.msg;
+            document.getElementById('trans-title').innerHTML = data.title;
+            document.getElementById('trans-msg').innerHTML = data.msg;
             topTitle.innerText = '樓層移動';
             topProgress.innerText = '移動中';
         } 
         else if(data.type === 'quiz') {
             showScreen('screen-question');
-            topTitle.innerText = data.title;
+            topTitle.innerHTML = data.title;
             topProgress.innerText = data.floor;
             
-            document.getElementById('q-context').innerText = data.context;
-            document.getElementById('q-body').innerText = data.q;
-            document.getElementById('opt-0').innerText = data.options[0].t;
-            document.getElementById('opt-1').innerText = data.options[1].t;
+            document.getElementById('q-context').innerHTML = data.context;
+            document.getElementById('q-body').innerHTML = data.q;
+            document.getElementById('opt-0').innerHTML = data.options[0].t;
+            document.getElementById('opt-1').innerHTML = data.options[1].t;
             
             document.getElementById('opt-0').style.display = 'block';
             document.getElementById('opt-1').style.display = 'block';
@@ -326,11 +593,10 @@ window.onload = function() {
             document.getElementById('opt-1').disabled = false;
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('cat-body').innerText = '🐆';
+            document.getElementById('cat-body').innerText = data.emoji || '🐆';
         }
     }
 
-    // -- 答題邏輯 (含 10 秒冷卻與位置提示) --
     function handleChoice(idx) {
         const data = currentGameData[step];
         const isCorrect = data.options[idx].c;
@@ -339,28 +605,30 @@ window.onload = function() {
 
         feedback.style.display = 'block';
         if(isCorrect) {
-            if(penaltyTimer) clearInterval(penaltyTimer); // 答對即清除倒數
+            if(penaltyTimer) clearInterval(penaltyTimer); 
             feedback.className = 'feedback-box feedback-correct';
-            feedback.innerHTML = `<strong>🏆 太棒了！</strong><br>${data.ok}`;
+            feedback.innerHTML = `<strong>🏆 ${currentDifficulty === 'basic' ? parseZhuyin('太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！') : '太棒了！'}</strong><br>${data.ok}`;
             cat.innerText = '😻';
             document.getElementById('opt-0').style.display = 'none';
             document.getElementById('opt-1').style.display = 'none';
             document.getElementById('btn-next').style.display = 'block';
             
             if(step === currentGameData.length - 1) {
-                document.getElementById('btn-next').innerText = '領取通關獎勵 🎁';
+                document.getElementById('btn-next').innerHTML = currentDifficulty === 'basic' ? parseZhuyin('領(ㄌㄧㄥˇ)取(ㄑㄩˇ)獎(ㄐㄧㄤˇ)勵(ㄌㄧˋ) 🎁') : '領取通關獎勵 🎁';
             } else {
-                document.getElementById('btn-next').innerText = '繼續前進';
+                document.getElementById('btn-next').innerHTML = currentDifficulty === 'basic' ? parseZhuyin('繼(ㄐㄧˋ)續(ㄒㄩˋ)前(ㄑㄧㄢˊ)進(ㄐㄧㄣˋ)') : '繼續前進';
             }
         } else {
-            // 答錯邏輯
             cat.innerText = '😿';
             document.getElementById('opt-0').disabled = true;
             document.getElementById('opt-1').disabled = true;
             
-            // 顯示詳解與館內位置，並加上倒數計時器預留區塊
+            const wrongTitle = currentDifficulty === 'basic' ? parseZhuyin('⚠️ 其(ㄑㄧˊ)實(ㄕˊ)...') : '⚠️ 其實...';
+            const locTitle = currentDifficulty === 'basic' ? parseZhuyin('📍 這(ㄓㄜˋ)在(ㄗㄞˋ)哪(ㄋㄚˇ)裡(ㄌㄧˇ)：') : '📍 展區具體位置：';
+            const waitMsg = currentDifficulty === 'basic' ? '等(ㄉㄥˇ)待(ㄉㄞˋ) 10 秒(ㄇㄧㄠˇ)...' : '系統冷卻中，請等待 10 秒...';
+            
             feedback.className = 'feedback-box feedback-wrong';
-            feedback.innerHTML = `<strong>⚠️ 其實...</strong><br>${data.tip}<br><br><span style="color: #0369a1;">📍 <strong>這東西在哪裡：</strong><br>${data.location}</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;">系統冷卻中，請等待 10 秒...</div>`;
+            feedback.innerHTML = `<strong>${wrongTitle}</strong><br>${data.tip}<br><br><span style="color: #0369a1;"><strong>${locTitle}</strong><br>${data.location}</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;">${waitMsg}</div>`;
             
             let timeLeft = 10;
             penaltyTimer = setInterval(() => {
@@ -368,11 +636,10 @@ window.onload = function() {
                 const timerEl = document.getElementById('timer-display');
                 if(timerEl) {
                     if(timeLeft > 0) {
-                        timerEl.innerText = `系統冷卻中，請等待 ${timeLeft} 秒...`;
+                        timerEl.innerText = currentDifficulty === 'basic' ? `等(ㄉㄥˇ)待(ㄉㄞˋ) ${timeLeft} 秒(ㄇㄧㄠˇ)...` : `答錯懲罰：系統冷卻中，請等待 ${timeLeft} 秒...`;
                     } else {
                         clearInterval(penaltyTimer);
                         timerEl.style.display = 'none';
-                        // 10秒後恢復另一顆按鈕的點擊權限，但按錯的那顆依舊保持不能按
                         document.getElementById('opt-0').disabled = false;
                         document.getElementById('opt-1').disabled = false;
                         document.getElementById(`opt-${idx}`).disabled = true; 
@@ -382,7 +649,6 @@ window.onload = function() {
                 }
             }, 1000);
             
-            // 畫面滾動到最下方方便看倒數
             setTimeout(() => {
                 const main = document.getElementById('main-content');
                 main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
@@ -390,7 +656,6 @@ window.onload = function() {
         }
     }
 
-    // -- 綁定：首頁難度選擇 --
     document.getElementById('btn-start-basic').addEventListener('click', () => {
         currentDifficulty = 'basic';
         currentGameData = quizDatabase.basic;
@@ -407,14 +672,12 @@ window.onload = function() {
     document.getElementById('opt-0').addEventListener('click', () => handleChoice(0));
     document.getElementById('opt-1').addEventListener('click', () => handleChoice(1));
     
-    // -- 繼續前進 (切換至動態獎勵畫面) --
     document.getElementById('btn-next').addEventListener('click', () => {
         if(step === currentGameData.length - 1) {
             gameFinished = true;
             document.getElementById('top-title').innerText = '任務達成';
             document.getElementById('top-progress').innerText = '領取獎勵';
             
-            // 判斷並設定動態獎勵樣式與文字
             const dynamicBox = document.getElementById('dynamic-reward-box');
             const dynamicTitle = document.getElementById('dynamic-reward-title');
             const passbookRewardCard = document.getElementById('passbook-reward-card');
@@ -424,22 +687,22 @@ window.onload = function() {
                 dynamicBox.style.background = '#f0fdf4';
                 dynamicBox.style.borderColor = '#22c55e';
                 dynamicTitle.style.color = '#166534';
-                dynamicTitle.innerText = '獲得：基礎獎勵 🎁';
+                dynamicTitle.innerText = '恭喜！你獲得【基礎獎勵】🎁';
                 
                 passbookRewardCard.style.background = '#f0fdf4';
                 passbookRewardCard.style.borderColor = '#bbf7d0';
                 passbookRewardTitle.style.color = '#166534';
-                passbookRewardTitle.innerText = '✅ 獲得：基礎獎勵';
+                passbookRewardTitle.innerText = '✅ 認證標章：基礎生態獎勵';
             } else {
                 dynamicBox.style.background = '#fef2f2';
                 dynamicBox.style.borderColor = '#ef4444';
                 dynamicTitle.style.color = '#991b1b';
-                dynamicTitle.innerText = '獲得：進階獎勵 🏆';
+                dynamicTitle.innerText = '超讚！你獲得【進階獎勵】🏆';
 
                 passbookRewardCard.style.background = '#fef2f2';
                 passbookRewardCard.style.borderColor = '#fecaca';
                 passbookRewardTitle.style.color = '#991b1b';
-                passbookRewardTitle.innerText = '✅ 獲得：進階獎勵';
+                passbookRewardTitle.innerText = '✅ 認證標章：進階達人獎勵';
             }
 
             document.getElementById('locked-card').style.display = 'none';
@@ -456,7 +719,6 @@ window.onload = function() {
         updateNav('nav-passbook');
     });
 
-    // -- 綁定：真實碳足跡計算 --
     document.getElementById('btn-calc-carbon').addEventListener('click', () => {
         const transType = document.getElementById('transport-type').value;
         const people = parseInt(document.getElementById('people-count').value);
@@ -465,22 +727,10 @@ window.onload = function() {
         let totalCarbon = 0;
         let transName = '';
         
-        if(transType === 'car') { 
-            transName = '自行開車'; 
-            totalCarbon = (0.134 * distanceKm) / people; 
-        }
-        else if(transType === 'scooter') { 
-            transName = '騎機車'; 
-            totalCarbon = (0.046 * distanceKm) / people; 
-        }
-        else if(transType === 'bus') { 
-            transName = '大眾客運'; 
-            totalCarbon = 0.055 * distanceKm; 
-        }
-        else if(transType === 'train') { 
-            transName = '火車'; 
-            totalCarbon = 0.054 * distanceKm; 
-        }
+        if(transType === 'car') { transName = '自行開車'; totalCarbon = (0.134 * distanceKm) / people; }
+        else if(transType === 'scooter') { transName = '騎機車'; totalCarbon = (0.046 * distanceKm) / people; }
+        else if(transType === 'bus') { transName = '大眾客運'; totalCarbon = 0.055 * distanceKm; }
+        else if(transType === 'train') { transName = '火車'; totalCarbon = 0.054 * distanceKm; }
 
         totalCarbon = totalCarbon.toFixed(1);
         carbonCalculated = true;
@@ -509,16 +759,10 @@ window.onload = function() {
     });
 
     document.getElementById('nav-home').addEventListener('click', () => {
-        if(gameFinished && !carbonCalculated) {
-            showScreen('screen-basic-reward');
-        } else if (gameFinished && carbonCalculated) {
-            alert('你已完成所有任務！請至碳存摺查看紀錄與兌換獎品。');
-            return;
-        } else if(step === -1) {
-            showScreen('screen-start');
-        } else {
-            updateUI(); 
-        }
+        if(gameFinished && !carbonCalculated) showScreen('screen-basic-reward');
+        else if (gameFinished && carbonCalculated) { alert('你已完成所有任務！請至碳存摺查看紀錄。'); return; }
+        else if(step === -1) showScreen('screen-start');
+        else updateUI(); 
         updateNav('nav-home');
     });
 
@@ -532,7 +776,6 @@ window.onload = function() {
     document.getElementById('nav-help').addEventListener('click', () => {
         alert('如有操作問題，請尋問各樓層工作人員獲取幫助！');
     });
-
 };
 </script>
 </body>
