@@ -50,22 +50,24 @@
         .context-text { font-size: 0.95rem; color: #475569; margin-bottom: 15px; line-height: 1.5; }
 
         /* =========================================
-           注音排版優化 (文字在左，注音在右) 
+           教科書級：注音排版優化 (字在左，注音在右且上下排列)
            ========================================= */
         ruby {
-            display: inline-block;
-            white-space: nowrap;
+            display: inline-flex; /* 讓國字跟注音區塊變成並排 */
+            align-items: center;  /* 垂直居中對齊 */
+            vertical-align: bottom;
+            margin-right: 0.1em;
         }
         rt {
-            display: inline-block;
-            font-size: 0.65em;
+            writing-mode: vertical-rl; /* 強制注音符號由上往下垂直排列 */
+            font-size: 0.45em; /* 縮小注音，讓上下疊加的高度接近國字高度 */
             color: #64748b;
-            margin-left: 2px;
-            vertical-align: middle;
-            transform: translateY(-0.1em);
+            margin-left: 3px;
+            line-height: 1;
+            letter-spacing: -1px; /* 讓注音符號彼此稍微靠近 */
         }
-        /* 深色背景中的注音變淺色 */
-        .btn-primary rt { color: rgba(255, 255, 255, 0.9); }
+        /* 深色背景中的注音變淺色，保護視力 */
+        .btn-primary rt { color: rgba(255, 255, 255, 0.95); }
         .feedback-correct rt { color: #166534; }
         .feedback-wrong rt { color: #991b1b; }
 
@@ -255,7 +257,7 @@
 
 <script>
 // ==========================================
-// 1. 遊戲資料建置 (完整雙題庫，包含新版最後一題與難度調整)
+// 1. 遊戲資料建置 (完整雙題庫)
 // ==========================================
 
 const quizDatabase = {
@@ -532,14 +534,14 @@ const quizDatabase = {
             // 進階題最後一題：簡單的里山概念
             type: 'quiz', floor: '2F 接待大廳', emoji: '🏡', location: '2樓 「里山倡議與永續生活看板」',
             title: '【什麼是里山？】',
-            context: '你已經完成了所有的石虎保育任務！這一切都是為了達成「里山（Satoyama）」倡議的願景。',
+            context: '你已經完成了所有的石虎保育任務！這一切都是為了達成「里山（Satoyama）」的願景。',
             q: '請問「里山」這個觀念的核心精神是什麼？',
             options: [
                 {t: '(A) 人類完全退出大自然，把森林全部封鎖起來不准任何人進入', c:false}, 
-                {t: '(B) 人類與大自然和諧共存，適度且永續地使用自然資源，不破壞生態', c:true}
+                {t: '(B) 人類與大自然和諧共存，適度使用自然資源且不破壞生態', c:true}
             ],
             ok: '完美的總結！里山精神不是要把人和自然完全隔絕，而是找出互利共生的方法，讓農田、村落與森林裡的動物都能好好生活下去！',
-            tip: '其實...如果人類完全退出，許多依賴農田環境生存的動物（如石虎）也會失去食物來源。里山強調的是「與自然和諧共存」喔。'
+            tip: '其實...如果人類完全退出，許多依賴農田環境的動物（如石虎）也會失去食物來源。里山強調的是「和諧共存」喔。'
         }
     ]
 };
