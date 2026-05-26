@@ -50,21 +50,16 @@
         .context-text { font-size: 0.95rem; color: #475569; margin-bottom: 15px; line-height: 1.5; }
 
         /* =========================================
-           教科書級：注音排版優化 (字在左，注音在右且上下排列)
+           教科書級：注音排版優化 (利用原生 ruby 支援達成標準排版)
            ========================================= */
         ruby {
-            display: inline-flex; /* 讓國字跟注音區塊變成並排 */
-            align-items: center;  /* 垂直居中對齊 */
-            vertical-align: bottom;
-            margin-right: 0.1em;
+            /* 啟用瀏覽器原生的台灣注音標準排版 (字在左、注音在右上下排列，聲調在旁) */
+            ruby-position: inter-character;
+            -webkit-ruby-position: inter-character;
         }
         rt {
-            writing-mode: vertical-rl; /* 強制注音符號由上往下垂直排列 */
-            font-size: 0.45em; /* 縮小注音，讓上下疊加的高度接近國字高度 */
+            font-size: 0.5em; /* 注音標準比例，設定為國字的一半 */
             color: #64748b;
-            margin-left: 3px;
-            line-height: 1;
-            letter-spacing: -1px; /* 讓注音符號彼此稍微靠近 */
         }
         /* 深色背景中的注音變淺色，保護視力 */
         .btn-primary rt { color: rgba(255, 255, 255, 0.95); }
@@ -389,7 +384,6 @@ const quizDatabase = {
         
         { type: 'transition', floor: '2F 接待大廳', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 2 樓(ㄌㄡˊ)', msg: '挑(ㄊㄧㄠ)戰(ㄓㄢˋ)要(ㄧㄠˋ)結(ㄐㄧㄝˊ)束(ㄕㄨˋ)了(ㄌㄜ˙)！回(ㄏㄨㄟˊ)到(ㄉㄠˋ) 2 樓(ㄌㄡˊ)大(ㄉㄚˋ)廳(ㄊㄧㄥ)吧(ㄅㄚ˙)。' },
         { 
-            // 初階題最後一題：簡單的循環經濟
             type: 'quiz', floor: '2F 接待大廳', emoji: '♻️', location: '2樓(ㄌㄡˊ) 大(ㄉㄚˋ)廳(ㄊㄧㄥ)「文(ㄨㄣˊ)創(ㄔㄨㄤˋ)展(ㄓㄢˇ)示(ㄕˋ)櫃(ㄍㄨㄟˋ)」旁(ㄆㄤˊ)',
             title: '【資(ㄗ)源(ㄩㄢˊ)不(ㄅㄨˋ)浪(ㄌㄤˋ)費(ㄈㄟˋ)】',
             context: '我(ㄨㄛˇ)們(ㄇㄣ˙)拿(ㄋㄚˊ)到(ㄉㄠˋ)一(ㄧˋ)份(ㄈㄣˋ)用(ㄩㄥˋ)廢(ㄈㄟˋ)棄(ㄑㄧˋ)木(ㄇㄨˋ)頭(ㄊㄡˊ)做(ㄗㄨㄛˋ)成(ㄔㄥˊ)的(ㄉㄜ˙)禮(ㄌㄧˇ)物(ㄨˋ)。',
@@ -403,7 +397,7 @@ const quizDatabase = {
         }
     ],
 
-    // 【進階關卡】難度調整為國中程度，敘述更生活化、好理解
+    // 【進階關卡】
     advanced: [
         { type: 'transition', floor: '1F 綠網特展區', title: '進入 1F 綠網特展區', msg: '準備開始進階生態挑戰，請仔細觀察！' },
         { 
@@ -531,7 +525,6 @@ const quizDatabase = {
 
         { type: 'transition', floor: '2F 接待大廳', title: '進入 2F 接待大廳', msg: '恭喜抵達終點！準備進行最後一題的永續結算。' },
         { 
-            // 進階題最後一題：簡單的里山概念
             type: 'quiz', floor: '2F 接待大廳', emoji: '🏡', location: '2樓 「里山倡議與永續生活看板」',
             title: '【什麼是里山？】',
             context: '你已經完成了所有的石虎保育任務！這一切都是為了達成「里山（Satoyama）」的願景。',
@@ -546,10 +539,10 @@ const quizDatabase = {
     ]
 };
 
-// -- 注音轉換器 (將字(音)轉為 HTML Ruby 標籤) --
+// -- 注音轉換器 --
 function parseZhuyin(text) {
     if(!text) return '';
-    // 匹配: 一個中文字 + 括號內的注音 (包含聲調)
+    // 將 國字(注音) 轉換為 <ruby> 標籤，啟用原生的注音排版
     return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
 }
 
@@ -686,7 +679,7 @@ window.onload = function() {
         }
     }
 
-    // 選擇基礎關卡，加入 .basic-mode 類別來放大字體
+    // 選擇基礎關卡：加入 basic-mode 放大型字體
     document.getElementById('btn-start-basic').addEventListener('click', () => {
         currentDifficulty = 'basic';
         document.body.classList.add('basic-mode');
@@ -694,7 +687,7 @@ window.onload = function() {
         step = 0; updateUI(); updateNav('nav-home');
     });
 
-    // 選擇進階關卡，移除 .basic-mode 類別，保持預設字體
+    // 選擇進階關卡：移除 basic-mode 保持預設字體
     document.getElementById('btn-start-adv').addEventListener('click', () => {
         currentDifficulty = 'advanced';
         document.body.classList.remove('basic-mode');
