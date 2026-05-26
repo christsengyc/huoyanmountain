@@ -50,29 +50,64 @@
         .context-text { font-size: 0.95rem; color: #475569; margin-bottom: 15px; line-height: 1.5; }
 
         /* =========================================
-           教科書級：注音排版優化 (利用原生 ruby 支援達成標準排版)
+           教科書級：自定義注音排版引擎 (完全避開瀏覽器 Bug)
+           精準控制：國字在左，注音上下排列，輕聲在上，二三四聲在右側垂直居中！
            ========================================= */
-        ruby {
-            /* 啟用瀏覽器原生的台灣注音標準排版 (字在左、注音在右上下排列，聲調在旁) */
-            ruby-position: inter-character;
-            -webkit-ruby-position: inter-character;
+        .bpmf-word {
+            display: inline-flex;
+            align-items: flex-end;
+            vertical-align: text-bottom;
+            margin-right: 0.15em;
         }
-        rt {
-            font-size: 0.5em; /* 注音標準比例，設定為國字的一半 */
+        .bpmf-han {
+            font-size: 1em;
+            line-height: 1.1;
+        }
+        .bpmf-ruby {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.45em; /* 縮小為國字的比例 */
+            margin-left: 3px;
             color: #64748b;
+            line-height: 1;
+            padding-bottom: 0.1em;
         }
-        /* 深色背景中的注音變淺色，保護視力 */
-        .btn-primary rt { color: rgba(255, 255, 255, 0.95); }
-        .feedback-correct rt { color: #166534; }
-        .feedback-wrong rt { color: #991b1b; }
+        .bpmf-light {
+            width: 1em;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: -0.1em;
+            font-weight: bold;
+        }
+        .bpmf-body {
+            display: flex;
+            flex-direction: row;
+        }
+        .bpmf-main {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: -0.05em;
+        }
+        .bpmf-tone {
+            display: flex;
+            align-items: center; /* 這裡保證二三四聲符號完美置中於注音右側！ */
+            padding-left: 2px;
+            font-weight: bold;
+        }
+
+        /* 深色背景中的注音變淺色 */
+        .btn-primary .bpmf-ruby { color: rgba(255, 255, 255, 0.95); }
+        .feedback-correct .bpmf-ruby { color: #166534; }
+        .feedback-wrong .bpmf-ruby { color: #991b1b; }
 
         /* =========================================
-           基礎關卡放大字體模式 
+           基礎關卡放大字體與行距模式 (適合孩童閱讀)
            ========================================= */
-        body.basic-mode .question-text { font-size: 1.35rem; line-height: 1.8; }
-        body.basic-mode .context-text { font-size: 1.15rem; line-height: 1.7; }
-        body.basic-mode .btn { font-size: 1.15rem; }
-        body.basic-mode .feedback-box { font-size: 1.1rem; line-height: 1.7; }
+        body.basic-mode .question-text { font-size: 1.35rem; line-height: 2.2; margin-bottom: 20px; }
+        body.basic-mode .context-text { font-size: 1.15rem; line-height: 2.0; margin-bottom: 20px; }
+        body.basic-mode .btn { font-size: 1.15rem; padding: 18px; margin-bottom: 12px; }
+        body.basic-mode .feedback-box { font-size: 1.1rem; line-height: 2.0; }
 
         .action-area { padding: 20px; background: #fff; border-top: 1px solid #e2e8f0; flex-shrink: 0; display: none; }
         .btn {
@@ -384,6 +419,7 @@ const quizDatabase = {
         
         { type: 'transition', floor: '2F 接待大廳', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 2 樓(ㄌㄡˊ)', msg: '挑(ㄊㄧㄠ)戰(ㄓㄢˋ)要(ㄧㄠˋ)結(ㄐㄧㄝˊ)束(ㄕㄨˋ)了(ㄌㄜ˙)！回(ㄏㄨㄟˊ)到(ㄉㄠˋ) 2 樓(ㄌㄡˊ)大(ㄉㄚˋ)廳(ㄊㄧㄥ)吧(ㄅㄚ˙)。' },
         { 
+            // 初階題最後一題：簡單的循環經濟
             type: 'quiz', floor: '2F 接待大廳', emoji: '♻️', location: '2樓(ㄌㄡˊ) 大(ㄉㄚˋ)廳(ㄊㄧㄥ)「文(ㄨㄣˊ)創(ㄔㄨㄤˋ)展(ㄓㄢˇ)示(ㄕˋ)櫃(ㄍㄨㄟˋ)」旁(ㄆㄤˊ)',
             title: '【資(ㄗ)源(ㄩㄢˊ)不(ㄅㄨˋ)浪(ㄌㄤˋ)費(ㄈㄟˋ)】',
             context: '我(ㄨㄛˇ)們(ㄇㄣ˙)拿(ㄋㄚˊ)到(ㄉㄠˋ)一(ㄧˋ)份(ㄈㄣˋ)用(ㄩㄥˋ)廢(ㄈㄟˋ)棄(ㄑㄧˋ)木(ㄇㄨˋ)頭(ㄊㄡˊ)做(ㄗㄨㄛˋ)成(ㄔㄥˊ)的(ㄉㄜ˙)禮(ㄌㄧˇ)物(ㄨˋ)。',
@@ -397,7 +433,7 @@ const quizDatabase = {
         }
     ],
 
-    // 【進階關卡】
+    // 【進階關卡】難度調整為國中程度，敘述更生活化、好理解
     advanced: [
         { type: 'transition', floor: '1F 綠網特展區', title: '進入 1F 綠網特展區', msg: '準備開始進階生態挑戰，請仔細觀察！' },
         { 
@@ -525,6 +561,7 @@ const quizDatabase = {
 
         { type: 'transition', floor: '2F 接待大廳', title: '進入 2F 接待大廳', msg: '恭喜抵達終點！準備進行最後一題的永續結算。' },
         { 
+            // 進階題最後一題：簡單的里山概念
             type: 'quiz', floor: '2F 接待大廳', emoji: '🏡', location: '2樓 「里山倡議與永續生活看板」',
             title: '【什麼是里山？】',
             context: '你已經完成了所有的石虎保育任務！這一切都是為了達成「里山（Satoyama）」的願景。',
@@ -539,11 +576,33 @@ const quizDatabase = {
     ]
 };
 
-// -- 注音轉換器 --
+// -- 終極版注音轉換器 (放棄 <ruby>，利用 Flexbox 自製完美排版) --
 function parseZhuyin(text) {
     if(!text) return '';
-    // 將 國字(注音) 轉換為 <ruby> 標籤，啟用原生的注音排版
-    return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+    return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, (match, han, zhuyin) => {
+        let main = zhuyin;
+        let tone = '';
+        let lightTone = '';
+        
+        // 抓取二三四聲，放在注音右側
+        const tones = ['ˊ', 'ˇ', 'ˋ'];
+        for (let t of tones) {
+            if (zhuyin.includes(t)) {
+                tone = t;
+                main = main.replace(t, '');
+                break;
+            }
+        }
+        // 抓取輕聲，放在注音最上方
+        if (zhuyin.includes('˙')) {
+            lightTone = '˙';
+            main = main.replace('˙', '');
+        }
+
+        let lightHtml = lightTone ? `<span class="bpmf-light">${lightTone}</span>` : `<span class="bpmf-light"></span>`;
+        
+        return `<span class="bpmf-word"><span class="bpmf-han">${han}</span><span class="bpmf-ruby">${lightHtml}<span class="bpmf-body"><span class="bpmf-main">${main}</span><span class="bpmf-tone">${tone}</span></span></span></span>`;
+    });
 }
 
 // 載入時將 Basic 題庫的文字進行注音轉換
@@ -648,18 +707,20 @@ window.onload = function() {
             
             const wrongTitle = currentDifficulty === 'basic' ? parseZhuyin('⚠️ 其(ㄑㄧˊ)實(ㄕˊ)...') : '⚠️ 其實...';
             const locTitle = currentDifficulty === 'basic' ? parseZhuyin('📍 這(ㄓㄜˋ)在(ㄗㄞˋ)哪(ㄋㄚˇ)裡(ㄌㄧˇ)：') : '📍 展區具體位置：';
-            const waitMsg = currentDifficulty === 'basic' ? '等(ㄉㄥˇ)待(ㄉㄞˋ) 10 秒(ㄇㄧㄠˇ)...' : '系統冷卻中，請等待 10 秒...';
             
             feedback.className = 'feedback-box feedback-wrong';
-            feedback.innerHTML = `<strong>${wrongTitle}</strong><br>${data.tip}<br><br><span style="color: #0369a1;"><strong>${locTitle}</strong><br>${data.location}</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;">${waitMsg}</div>`;
+            // 加入倒數計時框
+            feedback.innerHTML = `<strong>${wrongTitle}</strong><br>${data.tip}<br><br><span style="color: #0369a1;"><strong>${locTitle}</strong><br>${data.location}</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;"></div>`;
             
             let timeLeft = 10;
+            const timerEl = document.getElementById('timer-display');
+            timerEl.innerHTML = currentDifficulty === 'basic' ? parseZhuyin(`等(ㄉㄥˇ)待(ㄉㄞˋ) ${timeLeft} 秒(ㄇㄧㄠˇ)...`) : `答錯懲罰：系統冷卻中，請等待 ${timeLeft} 秒...`;
+            
             penaltyTimer = setInterval(() => {
                 timeLeft--;
-                const timerEl = document.getElementById('timer-display');
                 if(timerEl) {
                     if(timeLeft > 0) {
-                        timerEl.innerText = currentDifficulty === 'basic' ? `等(ㄉㄥˇ)待(ㄉㄞˋ) ${timeLeft} 秒(ㄇㄧㄠˇ)...` : `答錯懲罰：系統冷卻中，請等待 ${timeLeft} 秒...`;
+                        timerEl.innerHTML = currentDifficulty === 'basic' ? parseZhuyin(`等(ㄉㄥˇ)待(ㄉㄞˋ) ${timeLeft} 秒(ㄇㄧㄠˇ)...`) : `答錯懲罰：系統冷卻中，請等待 ${timeLeft} 秒...`;
                     } else {
                         clearInterval(penaltyTimer);
                         timerEl.style.display = 'none';
@@ -679,7 +740,7 @@ window.onload = function() {
         }
     }
 
-    // 選擇基礎關卡：加入 basic-mode 放大型字體
+    // 選擇基礎關卡：加入 basic-mode 放大型字體與行距
     document.getElementById('btn-start-basic').addEventListener('click', () => {
         currentDifficulty = 'basic';
         document.body.classList.add('basic-mode');
