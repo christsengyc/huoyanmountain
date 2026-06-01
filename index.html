@@ -33,10 +33,7 @@
         }
         .header-title { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
         
-        /* 狀態吧：顯示海拔與碳排 */
-        .status-bar {
-            display: flex; gap: 10px; font-size: 0.85rem; font-weight: bold;
-        }
+        .status-bar { display: flex; gap: 10px; font-size: 0.85rem; font-weight: bold; }
         .status-tag { background: #f1f5f9; padding: 4px 10px; border-radius: 20px; color: #475569;}
         .status-carbon { color: #b45309; background: #fef3c7; }
         .status-alt { color: #1d4ed8; background: #dbeafe; }
@@ -51,7 +48,6 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
         }
         
-        /* 預留圖片欄位優化 */
         .question-image-placeholder {
             width: 100%; height: 180px; background-color: #e2e8f0; border: 2px dashed #94a3b8;
             border-radius: 12px; display: flex; justify-content: center; align-items: center;
@@ -70,7 +66,6 @@
         .bpmf-main { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -0.05em; }
         .bpmf-tone { display: flex; align-items: center; padding-left: 2px; font-weight: bold; }
 
-        /* 基礎關卡放大字體與行距模式 */
         body.basic-mode .question-text { font-size: 1.35rem; line-height: 2.2; margin-bottom: 20px; }
         body.basic-mode .context-text { font-size: 1.15rem; line-height: 2.0; margin-bottom: 20px; }
         body.basic-mode .btn { font-size: 1.15rem; padding: 18px; margin-bottom: 12px; }
@@ -89,6 +84,11 @@
         .feedback-correct { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .feedback-wrong { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
+        /* 具象化進度條動畫樣式 */
+        .progress-track { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+        .progress-fill-alt { height: 100%; background: #3b82f6; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-fill-car { height: 100%; background: #22c55e; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; color: #334155; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem; }
@@ -101,11 +101,9 @@
         .info-list li { margin-bottom: 12px; line-height: 1.6; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
         .info-list li:last-child { border-bottom: none; }
         
-        /* 即時影像版面加大優化 */
         .video-container { position: relative; width: 100%; padding-bottom: 65%; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 12px; border: 2px solid #cbd5e1; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        /* 隱藏的開發者後台樣式 */
         #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 15px; }
     </style>
 </head>
@@ -181,7 +179,7 @@
             <button class="btn btn-outline" id="btn-start-adv" style="padding: 20px; font-size: 1.2rem; border-color: #c89f5d; color: #b45309;">
                 <div style="font-size: 40px; margin-bottom: 10px;">🦅</div>
                 🔥 巡山大冠鷲 (進階)<br>
-                <span style="font-size: 0.85rem; font-weight: normal;">深入地質與生態，適合達人</span>
+                <span style="font-size: 0.85rem; font-weight: normal;">純文字版本，適合達人</span>
             </button>
         </div>
 
@@ -235,7 +233,7 @@
                     <li><strong>🛗 無障礙電梯：</strong><br>位於各樓層廁所旁邊</li>
                     <li><strong>💧 飲水機：</strong><br><span style="color: #dc2626; font-weight: bold;">僅位於 1 樓樓梯左側</span></li>
                     <li><strong>📞 聯絡電話：</strong><br>037-878851</li>
-                    <li id="secret-trigger-address" style="cursor: pointer; padding: 4px 0;"><strong>🏠 地址：</strong>367 苗栗縣三義鄉廣盛村中正路 73 號 (點擊看後台)</li>
+                    <li id="secret-trigger-address" style="cursor: pointer; padding: 4px 0;"><strong>🏠 地址：</strong>367 苗栗縣三義鄉廣盛村中正路 73 號</li>
                 </ul>
 
                 <div id="admin-panel">
@@ -260,7 +258,7 @@
 
     <nav>
         <div class="nav-tab active" id="nav-lobby"><div class="nav-icon">🏛️</div>大廳</div>
-        <div class="nav-tab" id="nav-mission"><div class="nav-icon">Compass</div>巡山任務</div>
+        <div class="nav-tab" id="nav-mission"><div class="nav-icon">🧭</div>巡山任務</div>
         <div class="nav-tab" id="nav-help"><div class="nav-icon">ℹ️</div>求助中心</div>
     </nav>
 
@@ -268,14 +266,13 @@
 
 <script>
 // ==========================================
-// 1. 遊戲資料建置 (5+5+1 獨立預留配置結構)
+// 1. 遊戲資料建置 (5+5+1 獨立預留配置結構，進階全無注音)
 // ==========================================
 
-const createQuestion = (floor, location, title, qIndex) => ({
+// 【初階題庫產生器：含有注音標籤】
+const createBasicQuestion = (floor, location, title, qIndex) => ({
     type: 'quiz', 
-    floor: floor,
-    location: location,
-    title: title,
+    floor: floor, location: location, title: title,
     context: `這(ㄓㄜˋ)裡(ㄌㄧˇ)是(ㄕˋ)關(ㄍㄨㄢ)於(ㄩˊ) ${floor} [${location}] 的(ㄉㄜ˙)里(ㄌㄧˇ)山(ㄕㄢ)低(ㄉㄧ)碳(ㄊㄢˋ)永(ㄩㄥˇ)續(ㄒㄩˋ)與(ㄩˇ)資(ㄗ)源(ㄩㄢˊ)再(ㄗㄞˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)情(ㄑㄧㄥˊ)境(ㄐㄧㄥˋ)故(ㄍㄨˋ)事(ㄕˋ)預(ㄩˋ)留(ㄌㄧㄡˊ)欄(ㄌㄢˊ)位(ㄨㄟˋ)。`,
     q: `請(ㄑㄧㄥˇ)問(ㄨㄣˋ)在(ㄗㄞˋ)此(ㄘˇ)展(ㄓㄢˇ)板(ㄅㄢˇ)前(ㄑㄧㄢˊ)，落(ㄌㄨㄛˋ)實(ㄕˊ)友(ㄧㄡˇ)善(ㄕㄢˋ)生(ㄕㄥ)態(ㄊㄞˋ)最(ㄗㄨㄟˋ)棒(ㄅㄤˋ)的(ㄉㄜ˙)選(ㄒㄩˇ)擇(ㄗㄜˊ)是(ㄕˋ)什(ㄕㄣˊ)麼(ㄇㄜ˙)？(第 ${qIndex} 題)`,
     options: [
@@ -287,47 +284,62 @@ const createQuestion = (floor, location, title, qIndex) => ({
     tip: '答(ㄉㄚˊ)錯(ㄘㄨㄛˋ)了(ㄌㄜ˙)喔(ㄛ)！再(ㄗㄞˋ)仔(ㄗˇ)細(ㄒㄧˋ)想(ㄒㄧㄢˇ)想(ㄒㄧㄢˇ)看(ㄎㄢˋ)...'
 });
 
+// 【進階題庫產生器：純文字，絕無注音】
+const createAdvQuestion = (floor, location, title, qIndex) => ({
+    type: 'quiz', 
+    floor: floor, location: location, title: title,
+    context: `這裡是關於 ${floor} [${location}] 的里山低碳永續與資源再利用情境故事預留欄位。`,
+    q: `請問在此展板前，落實友善生態最棒的選擇是什麼？(第 ${qIndex} 題)`,
+    options: [
+        {t: '(A) 符合里山精神的低碳再利用選項', c: true}, 
+        {t: '(B) 高度開發與破壞生態選項', c: false},
+        {t: '(C) 維持現狀不做任何改變選項', c: false}
+    ],
+    ok: '太棒了！這選項完美呼應里山倡議人與自然和諧共生的精神！',
+    tip: '答錯了喔！再仔細想想看...'
+});
+
 // 精確配置 5 (1F) + 5 (B1) + 1 (2F)
 const quizDatabase = {
     basic: [
         { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 1 樓(ㄌㄡˊ) 綠(ㄌㄩˋ)網(ㄨㄤˇ)特(ㄊㄜˋ)展(ㄓㄢˇ)區(ㄑㄩ)', msg: '開(ㄎㄞ)始(ㄕˇ) 1 樓(ㄌㄡˊ)的(ㄉㄜ˙)生(ㄕㄥ)態(ㄊㄞˋ)廊(ㄌㄤˊ)道(ㄉㄠˋ)探(ㄊㄢˋ)索(ㄙㄨㄛˇ)，尋(ㄒㄩㄣˊ)找(ㄓㄠˇ)小(ㄒㄧㄠˇ)動(ㄉㄨㄥˋ)物(ㄨˋ)！' },
-        createQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 1】', 1),
-        createQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 2】', 2),
-        createQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 3】', 3),
-        createQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 4】', 4),
-        createQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 5】', 5),
+        createBasicQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 1】', 1),
+        createBasicQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 2】', 2),
+        createBasicQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 3】', 3),
+        createBasicQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 4】', 4),
+        createBasicQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 5】', 5),
         
         { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) B1 樓(ㄌㄡˊ) 常(㔔)設(ㄕㄜˋ)展(ㄓㄢˇ)區(ㄑㄩ)', msg: '前(ㄑㄧㄢˊ)往(ㄨㄤˇ)地(ㄉㄧˋ)下(ㄒㄧㄚˋ)室(ㄕˋ)，深(ㄕㄣ)度(ㄉㄨˋ)瞭(ㄌㄧㄠˇ)解(ㄐㄧㄝˇ)火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)地(ㄉㄧˋ)質(ㄓˊ)秘密！' },
-        createQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 6】', 6),
-        createQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 7】', 7),
-        createQuestion('B1 樓 常設展區', '地層標本展示櫃', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 8】', 8),
-        createQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 9】', 9),
-        createQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 10】', 10),
+        createBasicQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 6】', 6),
+        createBasicQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 7】', 7),
+        createBasicQuestion('B1 樓 常設展區', '地層標本展示櫃', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 8】', 8),
+        createBasicQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 9】', 9),
+        createBasicQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 10】', 10),
         
         { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 2 樓(ㄌㄡˊ) 接(ㄐㄧㄝ)待(ㄉㄞˋ)大(ㄉㄚˋ)廳(ㄊㄧㄥ)', msg: '回(ㄏㄨㄟˊ)到(ㄉㄠˋ) 2 樓(ㄌㄡˊ)，進(ㄐㄧㄣˋ)行(ㄒㄧㄥˊ)最(ㄗㄨㄟˋ)後(ㄏㄡˋ)的(ㄉㄜ˙)里(ㄌㄧˇ)山(ㄕㄢ)碳(ㄊㄢˋ)中(ㄓㄨㄥ)和(ㄏㄜˊ)結(ㄐㄧㄝˊ)算(ㄙㄨㄢˋ)！' },
-        createQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【初(ㄔㄨ)階(ㄐㄧㄝ) 2 樓(ㄌㄡˊ) 任務 11】', 11)
+        createBasicQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【初(ㄔㄨ)階(ㄐㄧㄝ) 2 樓(ㄌㄡˊ) 任務 11】', 11)
     ],
     advanced: [
         { type: 'floor', title: '進入 1 樓 綠網特展區', msg: '開啟巡山大冠鷲進階生態綠網廊道任務。' },
-        createQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【進階 1 樓 任務 1】', 1),
-        createQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【進階 1 樓 任務 2】', 2),
-        createQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【進階 1 樓 任務 3】', 3),
-        createQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【進階 1 樓 任務 4】', 4),
-        createQuestion('1 樓 綠網特展區', '外來入侵種防治專專區', '【進階 1 樓 任務 5】', 5),
+        createAdvQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【進階 1 樓 任務 1】', 1),
+        createAdvQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【進階 1 樓 任務 2】', 2),
+        createAdvQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【進階 1 樓 任務 3】', 3),
+        createAdvQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【進階 1 樓 任務 4】', 4),
+        createAdvQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【進階 1 樓 任務 5】', 5),
         
         { type: 'floor', title: '進入 B1 樓 常設展區', msg: '前往地質展區，挑戰惡地地形剪力與侵蝕機制。' },
-        createQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【進階 B1 樓 任務 6】', 6),
-        createQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【進階 B1 樓 任務 7】', 7),
-        createQuestion('B1 樓 常設展區', '地層標本展示櫃', '【進階 B1 樓 任務 8】', 8),
-        createQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【進階 B1 樓 任務 9】', 9),
-        createQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【進階 B1 樓 任務 10】', 10),
+        createAdvQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【進階 B1 樓 任務 6】', 6),
+        createAdvQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【進階 B1 樓 任務 7】', 7),
+        createAdvQuestion('B1 樓 常設展區', '地層標本展示櫃', '【進階 B1 樓 任務 8】', 8),
+        createAdvQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【進階 B1 樓 任務 9】', 9),
+        createAdvQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【進階 B1 樓 任務 10】', 10),
         
         { type: 'floor', title: '進入 2 樓 接待大廳', msg: '回到接待大廳，完成高階環境永續里山倡議總結。' },
-        createQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【進階 2 樓 任務 11】', 11)
+        createAdvQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【進階 2 樓 任務 11】', 11)
     ]
 };
 
-// -- 注音文字轉換引擎 (基礎模式專用) --
+// -- 注音文字轉換引擎 (只套用於初階陣列) --
 function parseZhuyin(text) {
     if(!text) return '';
     return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, (match, han, zhuyin) => {
@@ -340,7 +352,6 @@ function parseZhuyin(text) {
     });
 }
 
-// 自動動態對初階題庫進行注音轉換處理
 quizDatabase.basic.forEach(item => {
     if (item.type === 'floor') {
         item.title = parseZhuyin(item.title);
@@ -397,7 +408,7 @@ window.onload = function() {
         if(currentDifficulty && (id === 'screen-question' || id === 'screen-transition' || id === 'screen-result')) {
             topStatus.innerHTML = `
                 <span class="status-tag status-alt">🏔️ 海拔 ${Math.round(currentAltitude)}m</span>
-                <span class="status-tag status-carbon">🍃 碳排 ${currentCarbon.toFixed(1)}kg</span>
+                <span class="status-tag status-carbon">🍃 碳排 ${Math.max(0, currentCarbon).toFixed(1)}kg</span>
             `;
         } else {
             topStatus.innerHTML = `<span class="status-tag">大廳/資訊</span>`;
@@ -460,24 +471,52 @@ window.onload = function() {
         if(isCorrect) {
             if(penaltyTimer) clearInterval(penaltyTimer); 
             
-            // 計算真正的答題數配置(排除floor元素)，確保剛好完全抵消碳排與登頂
+            // 計算真正的答題數配置(排除floor元素)
             const qCount = currentGameData.filter(i => i.type === 'quiz').length;
-            currentAltitude += (MAX_ALTITUDE / qCount);
-            currentCarbon -= carbonPerQuestion;
+            const altGain = MAX_ALTITUDE / qCount;
+            const carbonGain = carbonPerQuestion;
+
+            currentAltitude += altGain;
+            currentCarbon -= carbonGain;
+            
             if(currentCarbon < 0) currentCarbon = 0;
             if(currentAltitude > MAX_ALTITUDE) currentAltitude = MAX_ALTITUDE;
             
             // 即時更新頂部狀態
             document.getElementById('top-status').innerHTML = `
                 <span class="status-tag status-alt">🏔️ 海拔 ${Math.round(currentAltitude)}m</span>
-                <span class="status-tag status-carbon">🍃 碳排 ${currentCarbon.toFixed(1)}kg</span>
+                <span class="status-tag status-carbon">🍃 碳排 ${Math.max(0, currentCarbon).toFixed(1)}kg</span>
             `;
 
             feedback.className = 'feedback-box feedback-correct';
-            const offsetMsg = currentDifficulty === 'basic' ? parseZhuyin(`抵(ㄉㄧˇ)換(ㄏㄨㄢˋ)了(ㄌㄜ˙) ${carbonPerQuestion.toFixed(1)} kg 碳(ㄊㄢˋ)排(ㄆㄞˊ)！`) : `抵換了 ${carbonPerQuestion.toFixed(1)} kg 碳排！`;
             const correctTitle = currentDifficulty === 'basic' ? parseZhuyin('太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！') : '太棒了！';
             
-            feedback.innerHTML = `<strong>🏆 ${correctTitle}</strong><br><span style="color:#b45309; font-weight:bold;">🍃 ${offsetMsg}</span><br><br>${data.ok}`;
+            // 計算進度條百分比
+            const altPercent = (currentAltitude / MAX_ALTITUDE) * 100;
+            const carbonOffsetPercent = ((totalCarbon - currentCarbon) / totalCarbon) * 100;
+
+            // 具象化動畫面板
+            feedback.innerHTML = `
+                <strong>🏆 ${correctTitle}</strong><br>
+                <div style="background: white; border-radius: 8px; padding: 12px; margin: 15px 0; border: 2px solid #bbf7d0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; color: #1d4ed8; font-size: 0.95rem; margin-bottom: 5px;">
+                        <span>🏔️ 海拔爬升 +${Math.round(altGain)}m</span>
+                        <span>當前 ${Math.round(currentAltitude)}m</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill-alt" style="width: ${altPercent}%;"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; color: #15803d; font-size: 0.95rem; margin-bottom: 5px;">
+                        <span>🍃 碳排抵換 -${carbonGain.toFixed(1)}kg</span>
+                        <span>剩餘 ${Math.max(0, currentCarbon).toFixed(1)}kg</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill-car" style="width: ${carbonOffsetPercent}%;"></div>
+                    </div>
+                </div>
+                ${data.ok}
+            `;
             
             for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).style.display = 'none';
             
@@ -490,7 +529,7 @@ window.onload = function() {
             }
         } else {
             // 後台錯題累計記錄
-            let logKey = `${currentDifficulty === 'basic' ? '初階' : '進階'}_第${step}步_展板位置:${data.location}`;
+            let logKey = `${currentDifficulty === 'basic' ? '初階' : '進階'}_展板位置:${data.location}`;
             logWrongStat(logKey);
 
             for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).disabled = true;
@@ -635,26 +674,26 @@ window.onload = function() {
 
     // --- 本地統計控制核心 (LocalStorage 技術) ---
     function initLocalStats() {
-        if(!localStorage.getItem('satoyama_system_analytics')) {
-            localStorage.setItem('satoyama_system_analytics', JSON.stringify({ basicCount: 0, advancedCount: 0, wrongLogs: {} }));
+        if(!localStorage.getItem('satoyama_system_analytics_v3')) {
+            localStorage.setItem('satoyama_system_analytics_v3', JSON.stringify({ basicCount: 0, advancedCount: 0, wrongLogs: {} }));
         }
     }
 
     function logPlayerStat(role) {
-        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v3')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
         if(role === 'basic') stats.basicCount++;
         else stats.advancedCount++;
-        localStorage.setItem('satoyama_system_analytics', JSON.stringify(stats));
+        localStorage.setItem('satoyama_system_analytics_v3', JSON.stringify(stats));
     }
 
     function logWrongStat(key) {
-        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v3')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
         stats.wrongLogs[key] = (stats.wrongLogs[key] || 0) + 1;
-        localStorage.setItem('satoyama_system_analytics', JSON.stringify(stats));
+        localStorage.setItem('satoyama_system_analytics_v3', JSON.stringify(stats));
     }
 
     function updateAdminDashboardView() {
-        const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics'));
+        const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v3'));
         let wrongListHtml = '';
         for(let key in stats.wrongLogs) {
             wrongListHtml += `<li>${key} : 被答錯 <span style="color:red; font-weight:bold;">${stats.wrongLogs[key]}</span> 次</li>`;
@@ -670,7 +709,7 @@ window.onload = function() {
 
     document.getElementById('btn-clear-data').addEventListener('click', () => {
         if(confirm('您確定要一鍵清空所有累積的開發人員統計數據嗎？此操作無法撤銷。')) {
-            localStorage.removeItem('satoyama_system_analytics');
+            localStorage.removeItem('satoyama_system_analytics_v3');
             initLocalStats();
             updateAdminDashboardView();
             alert('數據清空完畢！');
