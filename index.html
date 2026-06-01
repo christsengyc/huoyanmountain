@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>里山任務：登頂火炎山與碳中和行動</title>
+    <title>里山任務行動：火炎山登頂之旅</title>
     <style>
         :root {
             --primary: #4A7c59; 
@@ -33,7 +33,10 @@
         }
         .header-title { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
         
-        .status-bar { display: flex; gap: 10px; font-size: 0.85rem; font-weight: bold; }
+        /* 狀態吧：顯示海拔與碳排 */
+        .status-bar {
+            display: flex; gap: 10px; font-size: 0.85rem; font-weight: bold;
+        }
         .status-tag { background: #f1f5f9; padding: 4px 10px; border-radius: 20px; color: #475569;}
         .status-carbon { color: #b45309; background: #fef3c7; }
         .status-alt { color: #1d4ed8; background: #dbeafe; }
@@ -48,8 +51,9 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
         }
         
+        /* 預留圖片欄位優化 */
         .question-image-placeholder {
-            width: 100%; height: 220px; background-color: #e2e8f0; border: 2px dashed #94a3b8;
+            width: 100%; height: 180px; background-color: #e2e8f0; border: 2px dashed #94a3b8;
             border-radius: 12px; display: flex; justify-content: center; align-items: center;
             color: #64748b; font-weight: bold; margin-bottom: 15px;
         }
@@ -57,7 +61,7 @@
         .question-text { font-size: 1.1rem; font-weight: bold; line-height: 1.6; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
         .context-text { font-size: 0.95rem; color: #475569; margin-bottom: 15px; line-height: 1.5; }
 
-        /* 注音引擎 */
+        /* 注音排版引擎 */
         .bpmf-word { display: inline-flex; align-items: flex-end; vertical-align: text-bottom; margin-right: 0.15em; }
         .bpmf-han { font-size: 1em; line-height: 1.1; }
         .bpmf-ruby { display: flex; flex-direction: column; align-items: center; font-size: 0.45em; margin-left: 3px; color: #64748b; line-height: 1; padding-bottom: 0.1em; }
@@ -66,8 +70,11 @@
         .bpmf-main { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -0.05em; }
         .bpmf-tone { display: flex; align-items: center; padding-left: 2px; font-weight: bold; }
 
-        body.basic-mode .question-text { font-size: 1.35rem; line-height: 2.2; }
-        body.basic-mode .context-text { font-size: 1.15rem; line-height: 2.0; }
+        /* 基礎關卡放大字體與行距模式 */
+        body.basic-mode .question-text { font-size: 1.35rem; line-height: 2.2; margin-bottom: 20px; }
+        body.basic-mode .context-text { font-size: 1.15rem; line-height: 2.0; margin-bottom: 20px; }
+        body.basic-mode .btn { font-size: 1.15rem; padding: 18px; margin-bottom: 12px; }
+        body.basic-mode .feedback-box { font-size: 1.1rem; line-height: 2.0; }
 
         .action-area { padding: 20px; background: #fff; border-top: 1px solid #e2e8f0; flex-shrink: 0; display: none; }
         .btn {
@@ -76,13 +83,14 @@
         }
         .btn-primary { background-color: var(--primary); color: white; text-align: center; }
         .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); text-align: center; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .feedback-box { padding: 15px; border-radius: 12px; margin-top: 10px; display: none; font-size: 0.95rem; line-height: 1.6; }
         .feedback-correct { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .feedback-wrong { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
         .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; color: #334155; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem; }
 
         nav { height: 65px; background: white; border-top: 1px solid #e2e8f0; display: flex; flex-shrink: 0; }
@@ -90,187 +98,236 @@
         .nav-tab.active { color: var(--primary); font-weight: bold; }
         .nav-icon { font-size: 1.3rem; margin-bottom: 4px; }
 
-        /* 即時影像加大版面 */
-        .video-container { position: relative; width: 100%; padding-bottom: 60%; background: #111; border-radius: 12px; overflow: hidden; margin: 15px 0; border: 3px solid #e2e8f0; }
-        .video-container iframe { position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 100px); border: none; transform: scale(1.1); }
+        .info-list li { margin-bottom: 12px; line-height: 1.6; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+        .info-list li:last-child { border-bottom: none; }
         
-        #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
+        /* 即時影像版面加大優化 */
+        .video-container { position: relative; width: 100%; padding-bottom: 65%; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 12px; border: 2px solid #cbd5e1; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        /* 隱藏的開發者後台樣式 */
+        #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 15px; }
     </style>
 </head>
-<body class="">
+<body>
 
 <div class="app-container">
     
     <header>
         <div class="header-title" id="top-title">里山任務行動</div>
         <div class="status-bar" id="top-status">
-            <span class="status-tag">大廳報到</span>
+            <span class="status-tag">大廳</span>
         </div>
     </header>
 
     <main id="main-content">
         
-        <div id="screen-lobby" class="screen active">
-            <div class="game-card" style="text-align: center;">
-                <h2 style="color: var(--primary); margin-top: 0;">🎥 火炎山即時影像</h2>
-                <p style="font-size: 0.85rem; color: #64748b; margin-top: -10px;">(📍 觀測方位：南向北眺望)</p>
+        <div id="screen-lobby" class="screen active" style="text-align: center;">
+            <h2 style="color: var(--primary); margin-top: 0;">保育官報到處</h2>
+            
+            <div class="game-card" style="padding: 15px;">
+                <strong style="color: var(--primary); display: block; margin-bottom: 5px;">🎥 火炎山即時影像</strong>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0;">(📍 觀測視角：由南向北眺望火炎山)</p>
                 <div class="video-container">
                     <iframe src="https://dfm.ardswc.gov.tw/debrisFinal/ShowCCDImg-LG.asp?StationID=26&CCDId=1"></iframe>
                 </div>
             </div>
 
             <div class="game-card">
-                <h3 style="margin-top: 0; color: #b45309;">🍃 計算您的碳足跡</h3>
+                <h3 style="margin-top: 0; color: #b45309;">🍃 啟程前：計算碳足跡</h3>
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 0; text-align: left;">在我們出發巡山之前，請先結算你今天來到這裡產生的碳足跡。稍後的任務將幫助你達成碳中和！</p>
+                
                 <div class="form-group">
-                    <label>📍 您是從哪裡過來的？</label>
+                    <label>📍 您是從哪個地區出發的？</label>
                     <select id="origin-location">
-                        <option value="15">苗栗縣內 (約 15km)</option>
-                        <option value="50" selected>新竹 / 台中 / 彰化 (約 50km)</option>
-                        <option value="120">台北 / 桃園 / 宜蘭 (約 120km)</option>
-                        <option value="180">嘉義 / 台南 (約 180km)</option>
-                        <option value="250">高屏 / 花東地區 (約 250km以上)</option>
+                        <option value="15">苗栗縣內 (約 15 公里)</option>
+                        <option value="50" selected>台中 / 新竹 / 彰化 (約 50 公里)</option>
+                        <option value="120">台北 / 新北 / 桃園 / 宜蘭 (約 120 公里)</option>
+                        <option value="150">雲林 / 嘉義 / 台南 (約 150 公里)</option>
+                        <option value="250">高屏 / 花東地區 (約 250 公里)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>🚗 交通工具</label>
+                    <label>🚗 搭乘什麼交通工具來的？</label>
                     <select id="transport-type">
                         <option value="car">自行開車</option>
                         <option value="scooter">騎乘機車</option>
                         <option value="bus">大眾客運</option>
-                        <option value="train">火車 + 步行</option>
+                        <option value="train">火車 + 步行/接駁</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>👥 同行人數</label>
-                    <input type="number" id="people-count" value="1" min="1">
+                    <label>👥 同行總共有幾個人？</label>
+                    <input type="number" id="people-count" value="1" min="1" max="20">
                 </div>
-                <button class="btn btn-primary" id="btn-calc-carbon">開啟角色扮演任務</button>
+                <button class="btn btn-primary" id="btn-calc-carbon" style="margin-top: 10px;">計算碳排並解鎖任務</button>
             </div>
         </div>
 
-        <div id="screen-role" class="screen" style="text-align: center;">
+        <div id="screen-role" class="screen" style="justify-content: center; text-align: center;">
             <div class="game-card" style="background: #fef3c7; border: 2px dashed #d97706;">
-                <p style="margin: 0; font-weight: bold; color: #92400e;">初始碳排放：<span id="initial-carbon-val">0</span> kg CO2e</p>
-                <p style="font-size: 0.85rem; margin-top: 5px;">答對問題可抵換碳排並攀登海拔高度！</p>
+                <h3 style="color: #b45309; margin: 0;">你的初始碳排量：<span id="display-initial-carbon">0</span> kg CO2e</h3>
+                <p style="font-size: 0.85rem; color: #92400e; margin-top: 5px;">選擇你的里山動物化身，透過答題攀登火炎山來抵銷碳排吧！</p>
             </div>
-            <h2 style="color: var(--primary);">請選擇您的化身</h2>
-            <button class="btn btn-primary" id="btn-choose-basic" style="padding: 20px;">
+
+            <h2 style="color: var(--primary); margin-bottom: 20px;">選擇你的任務化身</h2>
+            
+            <button class="btn btn-primary" id="btn-start-basic" style="padding: 20px; font-size: 1.2rem;">
                 <div style="font-size: 40px; margin-bottom: 10px;">🐆</div>
-                🌱 實習小石虎 (初階)<br><small>適合低年級，附注音引導</small>
+                🌱 實習小石虎 (初階)<br>
+                <span style="font-size: 0.85rem; font-weight: normal;">使用注音排版，適合孩童</span>
             </button>
-            <button class="btn btn-outline" id="btn-choose-adv" style="padding: 20px; border-color: #c89f5d; color: #b45309;">
+            
+            <button class="btn btn-outline" id="btn-start-adv" style="padding: 20px; font-size: 1.2rem; border-color: #c89f5d; color: #b45309;">
                 <div style="font-size: 40px; margin-bottom: 10px;">🦅</div>
-                🔥 巡山大冠鷲 (進階)<br><small>適合國中以上，深入挑戰</small>
+                🔥 巡山大冠鷲 (進階)<br>
+                <span style="font-size: 0.85rem; font-weight: normal;">深入地質與生態，適合達人</span>
             </button>
         </div>
 
         <div id="screen-transition" class="screen" style="text-align: center; justify-content: center;">
-            <div style="font-size: 50px;">🚶</div>
-            <h2 id="floor-title">準備進入 1 樓</h2>
-            <p id="floor-desc">請移動至指定樓層展區</p>
-            <button class="btn btn-primary" id="btn-floor-start">我已抵達，開始任務</button>
+            <div style="font-size: 50px;" id="trans-icon">👣</div>
+            <h2 id="trans-title">前往下一區</h2>
+            <p id="trans-msg" style="color: #64748b; line-height: 1.6;">準備好後請繼續</p>
+            <button class="btn btn-primary" id="btn-trans-next" style="margin-top: 20px;">我已抵達，開始探索</button>
         </div>
 
         <div id="screen-question" class="screen">
             <div class="game-card">
-                <div class="question-image-placeholder">[ 圖片預留區域 ]</div>
-                <div class="context-text" id="q-context">...</div>
-                <div class="question-text" id="q-body">...</div>
+                <div class="question-image-placeholder">
+                    [ 圖片預留區域 ]
+                </div>
+                <div class="context-text" id="q-context">情境載入中...</div>
+                <div class="question-text" id="q-body">問題載入中...</div>
             </div>
             <div id="feedback" class="feedback-box"></div>
         </div>
 
         <div id="screen-result" class="screen" style="text-align: center; justify-content: center;">
-            <div style="font-size: 60px;">⛰️</div>
-            <h2 style="color: var(--primary);">抵達火炎山巔！</h2>
-            <div class="game-card" style="background: #f0fdf4; border: 2px solid #22c55e;">
-                <p style="font-weight: bold; color: #166534;">海拔：602m (登頂成功)</p>
-                <p style="font-weight: bold; color: #b45309;">碳抵換量：<span id="final-offset-val">0</span> kg (碳中和達成)</p>
-                <p style="font-size: 0.9rem; text-align: left; margin-top: 15px;">您已學會里山資源循環的精神！請出示此畫面給 2 樓服務台領取小禮物。</p>
+            <div style="font-size: 60px;">🏔️</div>
+            <h2 style="color: var(--primary); margin-bottom: 5px;">成功登頂！碳中和達成</h2>
+            
+            <div class="game-card" style="background: #f0fdf4; border: 2px solid #22c55e; padding: 20px; margin-top: 20px;">
+                <strong style="font-size: 1.2rem; display: block; color: #166534;">🎉 任務圓滿完成</strong>
+                <p style="font-size: 0.95rem; color: #15803d; line-height: 1.6; font-weight: bold;">
+                    你已經抵達火炎山頂 (海拔 602 公尺)！<br>
+                    透過你的保育知識，你成功抵換了本次旅程的 <span id="final-carbon-cleared" style="color:#b45309; font-size:1.1rem;">0</span> kg 碳排量。
+                </p>
+                <hr style="border: 0; border-top: 1px solid #bbf7d0; margin: 15px 0;">
+                <p style="font-size: 0.85rem; color: #166534; text-align: left; margin: 0;">
+                    <strong>🌳 里山倡議精神：</strong><br>
+                    我們不一定要與大自然完全隔離，只要學會低碳生活、資源再利用，人類與野生動物就能在這片土地上和諧共存。請帶著這份知識，繼續守護我們的家園！
+                </p>
             </div>
-            <button class="btn btn-primary" onclick="location.reload()">重新挑戰</button>
+            <p style="font-size: 0.9rem; font-weight: bold; color: #64748b;">請向 2 樓服務台出示此畫面，兌換你的專屬好禮！</p>
         </div>
 
         <div id="screen-help" class="screen">
-            <h2 style="color: var(--primary);">ℹ️ 館內服務資訊</h2>
+            <h2 style="color: var(--primary); margin-top: 0;">ℹ️ 服務中心資訊</h2>
+            
             <div class="game-card">
-                <ul style="list-style: none; padding: 0; line-height: 1.8;">
+                <ul class="info-list" style="list-style: none; padding: 0; margin: 0;">
                     <li><strong>🚻 廁所位置：</strong><br>
                         - 2樓：服務台後方<br>
                         - 1樓：樓梯左後方電梯旁<br>
-                        - B1 ：左後方</li>
-                    <li><strong>🛗 電梯：</strong>位於各樓層廁所旁</li>
-                    <li><strong>💧 飲水機：</strong>僅位於 1 樓樓梯左側</li>
-                    <li><strong>📞 電話：</strong>037-878851</li>
-                    <li id="secret-address"><strong>🏠 地址：</strong>367苗栗縣三義鄉廣盛村中正路73號</li>
+                        - B1 ：左後方
+                    </li>
+                    <li><strong>🛗 無障礙電梯：</strong><br>位於各樓層廁所旁邊</li>
+                    <li><strong>💧 飲水機：</strong><br><span style="color: #dc2626; font-weight: bold;">僅位於 1 樓樓梯左側</span></li>
+                    <li><strong>📞 聯絡電話：</strong><br>037-878851</li>
+                    <li id="secret-trigger-address" style="cursor: pointer; padding: 4px 0;"><strong>🏠 地址：</strong>367 苗栗縣三義鄉廣盛村中正路 73 號 (點擊看後台)</li>
                 </ul>
+
+                <div id="admin-panel">
+                    <strong style="color: #475569; display: block; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">📊 開發人員數據後台 (累計統計)</strong>
+                    <div id="admin-stats-content" style="text-align: left; font-size: 0.9rem; margin-top: 10px; line-height: 1.6; color: #334155;">
+                        正在讀取累計數據...
+                    </div>
+                    <button class="btn" id="btn-clear-data" style="background: #ef4444; color: white; margin-top: 15px; padding: 10px; font-size: 0.9rem; margin-bottom: 0;">🧹 清除所有統計數據</button>
+                </div>
             </div>
-            
-            <div id="admin-panel" class="game-card" style="background: #f8fafc;">
-                <strong style="color: #475569;">📊 管理者數據分析</strong>
-                <div id="admin-content" style="font-size: 0.85rem; margin-top: 10px;"></div>
-                <button class="btn" id="btn-reset-stats" style="background: #ef4444; color: white; padding: 8px; font-size: 0.8rem; margin-top: 10px;">清除統計數據</button>
-            </div>
+            <p style="text-align: center; color: #64748b; font-size: 0.85rem;">如有其他問題，請隨時向館內工作人員詢問！</p>
         </div>
 
     </main>
 
     <div class="action-area" id="footer-actions">
-        <button class="btn btn-outline" id="opt-0">A</button>
-        <button class="btn btn-outline" id="opt-1">B</button>
-        <button class="btn btn-outline" id="opt-2">C</button>
-        <button class="btn btn-primary" id="btn-next-step" style="display: none;">繼續前進</button>
+        <button class="btn btn-outline" id="opt-0">選項 A</button>
+        <button class="btn btn-outline" id="opt-1">選項 B</button>
+        <button class="btn btn-outline" id="opt-2">選項 C</button>
+        <button class="btn btn-primary" id="btn-next" style="display: none;">繼續攀登</button>
     </div>
 
     <nav>
-        <div class="nav-tab active" id="nav-lobby"><div class="nav-icon">🏠</div>大廳</div>
-        <div class="nav-tab" id="nav-mission"><div class="nav-icon">🏔️</div>任務</div>
-        <div class="nav-tab" id="nav-help"><div class="nav-icon">ℹ️</div>求助</div>
+        <div class="nav-tab active" id="nav-lobby"><div class="nav-icon">🏛️</div>大廳</div>
+        <div class="nav-tab" id="nav-mission"><div class="nav-icon">Compass</div>巡山任務</div>
+        <div class="nav-tab" id="nav-help"><div class="nav-icon">ℹ️</div>求助中心</div>
     </nav>
 
 </div>
 
 <script>
 // ==========================================
-// 1. 題庫架構 (分樓層與展位預留)
+// 1. 遊戲資料建置 (5+5+1 獨立預留配置結構)
 // ==========================================
-const createQuiz = (floor, location, title) => ({
-    type: 'quiz', floor, location, title: `【${title}】`,
-    context: `這裡是關於 ${floor} 的里山永續概念描述。`,
-    q: `在 ${location}，我們應該如何落實低碳生活？`,
+
+const createQuestion = (floor, location, title, qIndex) => ({
+    type: 'quiz', 
+    floor: floor,
+    location: location,
+    title: title,
+    context: `這(ㄓㄜˋ)裡(ㄌㄧˇ)是(ㄕˋ)關(ㄍㄨㄢ)於(ㄩˊ) ${floor} [${location}] 的(ㄉㄜ˙)里(ㄌㄧˇ)山(ㄕㄢ)低(ㄉㄧ)碳(ㄊㄢˋ)永(ㄩㄥˇ)續(ㄒㄩˋ)與(ㄩˇ)資(ㄗ)源(ㄩㄢˊ)再(ㄗㄞˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)情(ㄑㄧㄥˊ)境(ㄐㄧㄥˋ)故(ㄍㄨˋ)事(ㄕˋ)預(ㄩˋ)留(ㄌㄧㄡˊ)欄(ㄌㄢˊ)位(ㄨㄟˋ)。`,
+    q: `請(ㄑㄧㄥˇ)問(ㄨㄣˋ)在(ㄗㄞˋ)此(ㄘˇ)展(ㄓㄢˇ)板(ㄅㄢˇ)前(ㄑㄧㄢˊ)，落(ㄌㄨㄛˋ)實(ㄕˊ)友(ㄧㄡˇ)善(ㄕㄢˋ)生(ㄕㄥ)態(ㄊㄞˋ)最(ㄗㄨㄟˋ)棒(ㄅㄤˋ)的(ㄉㄜ˙)選(ㄒㄩˇ)擇(ㄗㄜˊ)是(ㄕˋ)什(ㄕㄣˊ)麼(ㄇㄜ˙)？(第 ${qIndex} 題)`,
     options: [
-        {t: '(A) 選擇正確的友善行動', c: true},
-        {t: '(B) 維持傳統的高耗能做法', c: false},
-        {t: '(C) 忽視環境變遷', c: false}
+        {t: '(A) 符(ㄈㄨˊ)合(ㄏㄜˊ)里(ㄌㄧˇ)山(ㄕㄢ)精(ㄐㄧㄣ)神(ㄕㄣ)的(ㄉㄜ˙)低(ㄉㄧ)碳(ㄊㄢˋ)再(ㄗㄞˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)', c: true}, 
+        {t: '(B) 高(ㄍㄠ)度(ㄉㄨˋ)開(ㄎㄞ)發(ㄈㄚ)與(ㄩˇ)破(ㄆㄛˋ)壞(ㄏㄨㄞˋ)生(ㄕㄥ)態(ㄊㄞˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)', c: false},
+        {t: '(C) 維(ㄨㄟˊ)持(㔾)現(ㄒㄧㄢˋ)狀(ㄓㄨㄤˋ)不(ㄅㄨˋ)做(ㄗㄨㄛˋ)任(ㄖㄣˋ)何(ㄏㄜˊ)改(ㄍㄞˇ)變(ㄅㄧㄢˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)'}
     ],
-    ok: `答對了！這就是里山倡議的核心精神。`,
-    tip: `哎呀，再想一下喔。`
+    ok: '太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！這(ㄓㄜˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)完(ㄨㄢˊ)美(ㄇㄟˇ)呼(ㄏㄨ)應(ㄧㄥ)里(ㄌㄧˇ)山(ㄕㄢ)倡(ㄔㄤˋ)議(ㄧˋ)人(ㄖㄣˊ)與(ㄩˇ)自(ㄗˋ)然(ㄖㄢˊ)和(ㄏㄜˊ)諧(ㄒㄧㄝˊ)共(ㄍㄨㄥˋ)生(ㄕㄥ)的精神！',
+    tip: '答(ㄉㄚˊ)錯(ㄘㄨㄛˋ)了(ㄌㄜ˙)喔(ㄛ)！再(ㄗㄞˋ)仔(ㄗˇ)細(ㄒㄧˋ)想(ㄒㄧㄢˇ)想(ㄒㄧㄢˇ)看(ㄎㄢˋ)...'
 });
 
+// 精確配置 5 (1F) + 5 (B1) + 1 (2F)
 const quizDatabase = {
     basic: [
-        { type: 'floor', title: '1 樓：國土綠網', desc: '巡視綠網廊道，尋找受傷的小動物。' },
-        createQuiz('1 樓', '濕地保育解鎖牆', '初階 1 樓題'),
-        createQuiz('1 樓', '中央溪流模型', '初階 1 樓題'),
-        { type: 'floor', title: 'B1 樓：地質與石虎', desc: '鑽入紅土層，了解石虎的秘密家園。' },
-        createQuiz('B1 樓', '地層標本牆', '初階 B1 題'),
-        createQuiz('B1 樓', '惡地立體沙盤', '初階 B1 題'),
-        { type: 'floor', title: '2 樓：永續里山', desc: '回到大廳，完成最後的碳中和總結。' },
-        createQuiz('2 樓', '低碳成果展示櫃', '初階 2 樓題')
+        { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 1 樓(ㄌㄡˊ) 綠(ㄌㄩˋ)網(ㄨㄤˇ)特(ㄊㄜˋ)展(ㄓㄢˇ)區(ㄑㄩ)', msg: '開(ㄎㄞ)始(ㄕˇ) 1 樓(ㄌㄡˊ)的(ㄉㄜ˙)生(ㄕㄥ)態(ㄊㄞˋ)廊(ㄌㄤˊ)道(ㄉㄠˋ)探(ㄊㄢˋ)索(ㄙㄨㄛˇ)，尋(ㄒㄩㄣˊ)找(ㄓㄠˇ)小(ㄒㄧㄠˇ)動(ㄉㄨㄥˋ)物(ㄨˋ)！' },
+        createQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 1】', 1),
+        createQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 2】', 2),
+        createQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 3】', 3),
+        createQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 4】', 4),
+        createQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 5】', 5),
+        
+        { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) B1 樓(ㄌㄡˊ) 常(㔔)設(ㄕㄜˋ)展(ㄓㄢˇ)區(ㄑㄩ)', msg: '前(ㄑㄧㄢˊ)往(ㄨㄤˇ)地(ㄉㄧˋ)下(ㄒㄧㄚˋ)室(ㄕˋ)，深(ㄕㄣ)度(ㄉㄨˋ)瞭(ㄌㄧㄠˇ)解(ㄐㄧㄝˇ)火(ㄏㄨㄛˇ)炎(ㄧㄢˊ)山(ㄕㄢ)地(ㄉㄧˋ)質(ㄓˊ)秘密！' },
+        createQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 6】', 6),
+        createQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 7】', 7),
+        createQuestion('B1 樓 常設展區', '地層標本展示櫃', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 8】', 8),
+        createQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 9】', 9),
+        createQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 10】', 10),
+        
+        { type: 'floor', title: '進(ㄐㄧㄣˋ)入(ㄖㄨˋ) 2 樓(ㄌㄡˊ) 接(ㄐㄧㄝ)待(ㄉㄞˋ)大(ㄉㄚˋ)廳(ㄊㄧㄥ)', msg: '回(ㄏㄨㄟˊ)到(ㄉㄠˋ) 2 樓(ㄌㄡˊ)，進(ㄐㄧㄣˋ)行(ㄒㄧㄥˊ)最(ㄗㄨㄟˋ)後(ㄏㄡˋ)的(ㄉㄜ˙)里(ㄌㄧˇ)山(ㄕㄢ)碳(ㄊㄢˋ)中(ㄓㄨㄥ)和(ㄏㄜˊ)結(ㄐㄧㄝˊ)算(ㄙㄨㄢˋ)！' },
+        createQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【初(ㄔㄨ)階(ㄐㄧㄝ) 2 樓(ㄌㄡˊ) 任務 11】', 11)
     ],
     advanced: [
-        { type: 'floor', title: '1 樓：綠網政策', desc: '深度分析廊道串聯與生態給付。' },
-        createQuiz('1 樓', '綠網廊道地圖', '進階 1 樓題'),
-        createQuiz('1 樓', '外來種防治區', '進階 1 樓題'),
-        { type: 'floor', title: 'B1 樓：惡地地質', desc: '探究地力學與孔隙水壓。' },
-        createQuiz('B1 樓', '侵蝕機制模型', '進階 B1 題'),
-        createQuiz('B1 樓', '剪力測試裝置', '進階 B1 題'),
-        { type: 'floor', title: '2 樓：里山精神', desc: '實踐永續共生願景。' },
-        createQuiz('2 樓', '里山生活看板', '進階 2 樓題')
+        { type: 'floor', title: '進入 1 樓 綠網特展區', msg: '開啟巡山大冠鷲進階生態綠網廊道任務。' },
+        createQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【進階 1 樓 任務 1】', 1),
+        createQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【進階 1 樓 任務 2】', 2),
+        createQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【進階 1 樓 任務 3】', 3),
+        createQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【進階 1 樓 任務 4】', 4),
+        createQuestion('1 樓 綠網特展區', '外來入侵種防治專專區', '【進階 1 樓 任務 5】', 5),
+        
+        { type: 'floor', title: '進入 B1 樓 常設展區', msg: '前往地質展區，挑戰惡地地形剪力與侵蝕機制。' },
+        createQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【進階 B1 樓 任務 6】', 6),
+        createQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【進階 B1 樓 任務 7】', 7),
+        createQuestion('B1 樓 常設展區', '地層標本展示櫃', '【進階 B1 樓 任務 8】', 8),
+        createQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【進階 B1 樓 任務 9】', 9),
+        createQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【進階 B1 樓 任務 10】', 10),
+        
+        { type: 'floor', title: '進入 2 樓 接待大廳', msg: '回到接待大廳，完成高階環境永續里山倡議總結。' },
+        createQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【進階 2 樓 任務 11】', 11)
     ]
 };
 
-// 注音處理函數
+// -- 注音文字轉換引擎 (基礎模式專用) --
 function parseZhuyin(text) {
     if(!text) return '';
     return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, (match, han, zhuyin) => {
@@ -283,188 +340,342 @@ function parseZhuyin(text) {
     });
 }
 
-// ==========================================
-// 2. 系統邏輯
-// ==========================================
-let step = 0, currentDifficulty = '', currentGameData = [], gameFinished = false;
-let initialCarbon = 0, currentCarbon = 0, currentAltitude = 0;
-let addressClickCount = 0; // 用於觸發秘密後台
+// 自動動態對初階題庫進行注音轉換處理
+quizDatabase.basic.forEach(item => {
+    if (item.type === 'floor') {
+        item.title = parseZhuyin(item.title);
+        item.msg = parseZhuyin(item.msg);
+    } else {
+        item.title = parseZhuyin(item.title);
+        item.context = parseZhuyin(item.context);
+        item.q = parseZhuyin(item.q);
+        item.options.forEach(opt => opt.t = parseZhuyin(opt.t));
+        item.ok = parseZhuyin(item.ok);
+        item.tip = parseZhuyin(item.tip);
+    }
+});
 
+// ==========================================
+// 2. 全域變數與系統狀態
+// ==========================================
+let step = -1;
+let currentDifficulty = ''; 
+let currentGameData = [];
+let gameFinished = false; 
+let penaltyTimer = null; 
+
+let totalCarbon = 0;      
+let currentCarbon = 0;    
+let carbonPerQuestion = 0;
+let currentAltitude = 0;  
+const MAX_ALTITUDE = 602; 
+
+let addressClicks = 0; // 用於開發人員點擊觸發
+
+// ==========================================
+// 3. 畫面控制與邏輯核心
+// ==========================================
 window.onload = function() {
-    initAdminStats();
+    initLocalStats();
 
-    // 秘密後台觸發
-    document.getElementById('secret-address').addEventListener('click', () => {
-        addressClickCount++;
-        if(addressClickCount >= 5) {
+    // 秘密暗號：連續點擊地址 5 次顯示管理者後台
+    document.getElementById('secret-trigger-address').addEventListener('click', () => {
+        addressClicks++;
+        if (addressClicks >= 5) {
             document.getElementById('admin-panel').style.display = 'block';
-            updateAdminView();
+            updateAdminDashboardView();
         }
     });
-
+    
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.getElementById('footer-actions').style.display = (id === 'screen-question') ? 'block' : 'none';
-        updateHeaderStatus();
-    }
-
-    function updateHeaderStatus() {
-        const bar = document.getElementById('top-status');
-        if(currentDifficulty) {
-            bar.innerHTML = `
-                <span class="status-tag status-alt">🏔️ ${Math.round(currentAltitude)}m</span>
-                <span class="status-tag status-carbon">🍃 ${currentCarbon.toFixed(1)}kg</span>
+        
+        // 頂部狀態列動態渲染
+        const topStatus = document.getElementById('top-status');
+        if(currentDifficulty && (id === 'screen-question' || id === 'screen-transition' || id === 'screen-result')) {
+            topStatus.innerHTML = `
+                <span class="status-tag status-alt">🏔️ 海拔 ${Math.round(currentAltitude)}m</span>
+                <span class="status-tag status-carbon">🍃 碳排 ${currentCarbon.toFixed(1)}kg</span>
             `;
+        } else {
+            topStatus.innerHTML = `<span class="status-tag">大廳/資訊</span>`;
         }
     }
 
-    // 計算碳足跡
-    document.getElementById('btn-calc-carbon').addEventListener('click', () => {
-        const km = parseFloat(document.getElementById('origin-location').value);
-        const type = document.getElementById('transport-type').value;
-        const people = parseInt(document.getElementById('people-count').value);
-        
-        let c = 0;
-        if(type === 'car') c = (0.134 * km) / people;
-        else if(type === 'scooter') c = (0.046 * km) / people;
-        else if(type === 'bus') c = 0.055 * km;
-        else c = 0.054 * km;
-
-        initialCarbon = parseFloat(c.toFixed(1));
-        currentCarbon = initialCarbon;
-        document.getElementById('initial-carbon-val').innerText = initialCarbon;
-        showScreen('screen-role');
-    });
-
-    // 選擇難度
-    document.getElementById('btn-choose-basic').addEventListener('click', () => {
-        currentDifficulty = 'basic';
-        document.body.classList.add('basic-mode');
-        startGame();
-    });
-    document.getElementById('btn-choose-adv').addEventListener('click', () => {
-        currentDifficulty = 'advanced';
-        document.body.classList.remove('basic-mode');
-        startGame();
-    });
-
-    function startGame() {
-        currentGameData = quizDatabase[currentDifficulty];
-        step = 0; currentAltitude = 0;
-        recordStat('role', currentDifficulty);
-        processStep();
+    function updateNav(activeId) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        if(activeId) document.getElementById(activeId).classList.add('active');
     }
 
-    function processStep() {
+    function updateUI() {
+        if(penaltyTimer) clearInterval(penaltyTimer); 
         const data = currentGameData[step];
-        if(!data) { finalizeGame(); return; }
+        const topTitle = document.getElementById('top-title');
 
+        if(!data) {
+            finalizeGame();
+            return;
+        }
+
+        // 處理跨樓層轉場畫面邏輯
         if(data.type === 'floor') {
             showScreen('screen-transition');
-            document.getElementById('floor-title').innerText = data.title;
-            document.getElementById('floor-desc').innerText = data.desc;
-        } else {
+            topTitle.innerText = '樓層異動指引';
+            document.getElementById('trans-title').innerHTML = data.title;
+            document.getElementById('trans-msg').innerHTML = data.msg;
+        } 
+        // 處理一般答題邏輯
+        else if(data.type === 'quiz') {
             showScreen('screen-question');
-            renderQuestion(data);
-        }
-    }
-
-    function renderQuestion(data) {
-        document.getElementById('top-title').innerText = data.title;
-        document.getElementById('q-context').innerText = data.context;
-        document.getElementById('q-body').innerText = data.q;
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('btn-next-step').style.display = 'none';
-
-        for(let i=0; i<3; i++) {
-            const btn = document.getElementById(`opt-${i}`);
-            btn.style.display = 'block';
-            btn.disabled = false;
-            btn.innerText = data.options[i].t;
-        }
-    }
-
-    // 處理答題
-    document.querySelectorAll('[id^="opt-"]').forEach((btn, idx) => {
-        btn.onclick = () => {
-            const data = currentGameData[step];
-            const isCorrect = data.options[idx].c;
-            const feedback = document.getElementById('feedback');
-
-            feedback.style.display = 'block';
-            if(isCorrect) {
-                feedback.className = 'feedback-box feedback-correct';
-                feedback.innerHTML = `<strong>🏆 答對了！</strong><br>${data.ok}`;
-                
-                // 獎勵邏輯
-                const qCount = currentGameData.filter(i => i.type === 'quiz').length;
-                currentAltitude += (602 / qCount);
-                currentCarbon -= (initialCarbon / qCount);
-                if(currentCarbon < 0) currentCarbon = 0;
-
-                document.querySelectorAll('[id^="opt-"]').forEach(b => b.style.display = 'none');
-                document.getElementById('btn-next-step').style.display = 'block';
-            } else {
-                feedback.className = 'feedback-box feedback-wrong';
-                feedback.innerHTML = `<strong>哎呀！先冷靜一下...</strong><br>${data.tip}<br><br><small>📍 這題在：<strong>${data.floor} - ${data.location}</strong> 展板有線索喔！</small>`;
-                recordStat('wrong', `${currentDifficulty}_S${step}`);
-                btn.disabled = true;
+            topTitle.innerHTML = data.title;
+            
+            document.getElementById('q-context').innerHTML = data.context;
+            document.getElementById('q-body').innerHTML = data.q;
+            
+            // 渲染 3 個選項
+            for(let i=0; i<3; i++) {
+                const btn = document.getElementById(`opt-${i}`);
+                if(data.options[i]) {
+                    btn.innerHTML = data.options[i].t;
+                    btn.style.display = 'block';
+                    btn.disabled = false;
+                } else {
+                    btn.style.display = 'none';
+                }
             }
-        };
-    });
+            
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+        }
+    }
 
-    document.getElementById('btn-floor-start').onclick = () => {
-        step++; processStep();
-    };
+    function handleChoice(idx) {
+        const data = currentGameData[step];
+        const isCorrect = data.options[idx].c;
+        const feedback = document.getElementById('feedback');
 
-    document.getElementById('btn-next-step').onclick = () => {
-        step++; processStep();
-    };
+        feedback.style.display = 'block';
+        if(isCorrect) {
+            if(penaltyTimer) clearInterval(penaltyTimer); 
+            
+            // 計算真正的答題數配置(排除floor元素)，確保剛好完全抵消碳排與登頂
+            const qCount = currentGameData.filter(i => i.type === 'quiz').length;
+            currentAltitude += (MAX_ALTITUDE / qCount);
+            currentCarbon -= carbonPerQuestion;
+            if(currentCarbon < 0) currentCarbon = 0;
+            if(currentAltitude > MAX_ALTITUDE) currentAltitude = MAX_ALTITUDE;
+            
+            // 即時更新頂部狀態
+            document.getElementById('top-status').innerHTML = `
+                <span class="status-tag status-alt">🏔️ 海拔 ${Math.round(currentAltitude)}m</span>
+                <span class="status-tag status-carbon">🍃 碳排 ${currentCarbon.toFixed(1)}kg</span>
+            `;
+
+            feedback.className = 'feedback-box feedback-correct';
+            const offsetMsg = currentDifficulty === 'basic' ? parseZhuyin(`抵(ㄉㄧˇ)換(ㄏㄨㄢˋ)了(ㄌㄜ˙) ${carbonPerQuestion.toFixed(1)} kg 碳(ㄊㄢˋ)排(ㄆㄞˊ)！`) : `抵換了 ${carbonPerQuestion.toFixed(1)} kg 碳排！`;
+            const correctTitle = currentDifficulty === 'basic' ? parseZhuyin('太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！') : '太棒了！';
+            
+            feedback.innerHTML = `<strong>🏆 ${correctTitle}</strong><br><span style="color:#b45309; font-weight:bold;">🍃 ${offsetMsg}</span><br><br>${data.ok}`;
+            
+            for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).style.display = 'none';
+            
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.display = 'block';
+            if(step === currentGameData.length - 1) {
+                btnNext.innerHTML = currentDifficulty === 'basic' ? parseZhuyin('抵(ㄉㄧˇ)達(ㄉㄚˊ)山(ㄕㄢ)頂(ㄉㄧㄥˇ) 🏔️') : '抵達山頂 🏔️';
+            } else {
+                btnNext.innerHTML = currentDifficulty === 'basic' ? parseZhuyin('繼(ㄐㄧˋ)續(ㄒㄩˋ)攀(ㄆㄢ)登(ㄉㄥ)') : '繼續攀登';
+            }
+        } else {
+            // 後台錯題累計記錄
+            let logKey = `${currentDifficulty === 'basic' ? '初階' : '進階'}_第${step}步_展板位置:${data.location}`;
+            logWrongStat(logKey);
+
+            for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).disabled = true;
+            
+            const wrongTitle = currentDifficulty === 'basic' ? parseZhuyin('⚠️ 其(ㄑㄧˊ)實(ㄕˊ)...') : '⚠️ 其實...';
+            
+            feedback.className = 'feedback-box feedback-wrong';
+            // 錯題回饋：精準指引實體展板位置
+            feedback.innerHTML = `<strong>${wrongTitle}</strong><br>${data.tip}<br><br><span style="color: #0284c7; font-weight: bold;">📍 線索提示：這題答案藏在【${data.floor} - ${data.location}】展板裡喔！</span><br><br><div id="timer-display" style="color: #dc2626; font-weight: bold; text-align: center; background: #fee2e2; padding: 10px; border-radius: 8px;"></div>`;
+            
+            let timeLeft = 10;
+            const timerEl = document.getElementById('timer-display');
+            const penaltyMsg = currentDifficulty === 'basic' ? parseZhuyin(`深(ㄕㄣ)呼(ㄏㄨ)吸(ㄒㄧ)，冷(ㄌㄥˇ)靜(ㄐㄧㄥˋ)一(ㄧˊ)下(ㄒㄧㄚˋ)... (${timeLeft} 秒(ㄇㄧㄠˇ))`) : `哎呀！深呼吸，冷靜一下... (${timeLeft} 秒)`;
+            timerEl.innerHTML = penaltyMsg;
+            
+            penaltyTimer = setInterval(() => {
+                timeLeft--;
+                if(timerEl) {
+                    if(timeLeft > 0) {
+                        timerEl.innerHTML = currentDifficulty === 'basic' ? parseZhuyin(`深(ㄕㄣ)呼(ㄏㄨ)吸(ㄒㄧ)，冷(ㄌㄥˇ)靜(ㄐㄧㄥˋ)一(ㄧˊ)下(ㄒㄧㄚˋ)... (${timeLeft} 秒(ㄇㄧㄠˇ))`) : `哎呀！深呼吸，冷靜一下... (${timeLeft} 秒)`;
+                    } else {
+                        clearInterval(penaltyTimer);
+                        timerEl.style.display = 'none';
+                        for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).disabled = false;
+                        document.getElementById(`opt-${idx}`).disabled = true; 
+                    }
+                } else {
+                    clearInterval(penaltyTimer);
+                }
+            }, 1000);
+            
+            setTimeout(() => {
+                const main = document.getElementById('main-content');
+                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+            }, 100);
+        }
+    }
 
     function finalizeGame() {
-        currentAltitude = 602; currentCarbon = 0;
-        document.getElementById('final-offset-val').innerText = initialCarbon;
-        showScreen('screen-result');
         gameFinished = true;
+        document.getElementById('top-title').innerText = '任務達成';
+        document.getElementById('final-carbon-cleared').innerText = totalCarbon;
+        
+        currentAltitude = MAX_ALTITUDE; currentCarbon = 0;
+        document.getElementById('top-status').innerHTML = `
+            <span class="status-tag status-alt">🏔️ 海拔 ${MAX_ALTITUDE}m</span>
+            <span class="status-tag status-carbon">🍃 碳排 0.0kg</span>
+        `;
+        showScreen('screen-result');
     }
 
-    // 導覽切換
-    document.getElementById('nav-lobby').onclick = () => { if(!gameFinished) showScreen('screen-lobby'); };
-    document.getElementById('nav-mission').onclick = () => { if(initialCarbon > 0 && !gameFinished) showScreen('screen-role'); };
-    document.getElementById('nav-help').onclick = () => { showScreen('screen-help'); };
+    // ---- 按鈕事件控制 ----
 
-    // --- 統計系統 ---
-    function initAdminStats() {
-        if(!localStorage.getItem('satoyama_stats')) {
-            localStorage.setItem('satoyama_stats', JSON.stringify({ basic: 0, advanced: 0, wrong_log: {} }));
+    document.getElementById('btn-calc-carbon').addEventListener('click', () => {
+        const distanceKm = parseFloat(document.getElementById('origin-location').value);
+        const transType = document.getElementById('transport-type').value;
+        const people = parseInt(document.getElementById('people-count').value);
+        
+        let calcCarbon = 0;
+        if(transType === 'car') { calcCarbon = (0.134 * distanceKm) / people; }
+        else if(transType === 'scooter') { calcCarbon = (0.046 * distanceKm) / people; }
+        else if(transType === 'bus') { calcCarbon = 0.055 * distanceKm; }
+        else if(transType === 'train') { calcCarbon = 0.054 * distanceKm; }
+
+        totalCarbon = parseFloat(calcCarbon.toFixed(1));
+        currentCarbon = totalCarbon;
+        
+        document.getElementById('display-initial-carbon').innerText = totalCarbon;
+        document.getElementById('top-title').innerText = '選擇任務';
+        showScreen('screen-role');
+        updateNav('nav-mission');
+    });
+
+    document.getElementById('btn-start-basic').addEventListener('click', () => {
+        currentDifficulty = 'basic';
+        document.body.classList.add('basic-mode');
+        currentGameData = quizDatabase.basic;
+        
+        const qCount = currentGameData.filter(i => i.type === 'quiz').length;
+        carbonPerQuestion = totalCarbon / qCount;
+        currentAltitude = 0; 
+        step = 0; 
+        
+        logPlayerStat('basic');
+        updateUI(); 
+    });
+
+    document.getElementById('btn-start-adv').addEventListener('click', () => {
+        currentDifficulty = 'advanced';
+        document.body.classList.remove('basic-mode');
+        currentGameData = quizDatabase.advanced;
+
+        const qCount = currentGameData.filter(i => i.type === 'quiz').length;
+        carbonPerQuestion = totalCarbon / qCount;
+        currentAltitude = 0; 
+        step = 0; 
+        
+        logPlayerStat('advanced');
+        updateUI(); 
+    });
+
+    // 轉場過渡畫面按鈕
+    document.getElementById('btn-trans-next').addEventListener('click', () => {
+        step++;
+        updateUI();
+    });
+
+    document.getElementById('opt-0').addEventListener('click', () => handleChoice(0));
+    document.getElementById('opt-1').addEventListener('click', () => handleChoice(1));
+    document.getElementById('opt-2').addEventListener('click', () => handleChoice(2));
+    
+    document.getElementById('btn-next').addEventListener('click', () => {
+        step++;
+        updateUI();
+    });
+
+    // 導覽標籤頁切換
+    document.getElementById('nav-lobby').addEventListener('click', () => {
+        if(gameFinished) return;
+        showScreen('screen-lobby');
+        document.getElementById('top-title').innerText = '里山任務行動';
+        updateNav('nav-lobby');
+    });
+
+    document.getElementById('nav-mission').addEventListener('click', () => {
+        if(gameFinished) { showScreen('screen-result'); updateNav('nav-mission'); return; }
+        if(totalCarbon === 0) { alert('請先在大廳計算碳足跡，才能解鎖巡山任務喔！'); return; }
+        
+        if(step === -1) showScreen('screen-role');
+        else updateUI(); 
+        updateNav('nav-mission');
+    });
+
+    document.getElementById('nav-help').addEventListener('click', () => {
+        showScreen('screen-help');
+        document.getElementById('top-title').innerText = '求助中心';
+        updateNav('nav-help');
+        if(document.getElementById('admin-panel').style.display === 'block') {
+            updateAdminDashboardView();
+        }
+    });
+
+    // --- 本地統計控制核心 (LocalStorage 技術) ---
+    function initLocalStats() {
+        if(!localStorage.getItem('satoyama_system_analytics')) {
+            localStorage.setItem('satoyama_system_analytics', JSON.stringify({ basicCount: 0, advancedCount: 0, wrongLogs: {} }));
         }
     }
 
-    function recordStat(type, key) {
-        let stats = JSON.parse(localStorage.getItem('satoyama_stats'));
-        if(type === 'role') stats[key]++;
-        else stats.wrong_log[key] = (stats.wrong_log[key] || 0) + 1;
-        localStorage.setItem('satoyama_stats', JSON.stringify(stats));
+    function logPlayerStat(role) {
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
+        if(role === 'basic') stats.basicCount++;
+        else stats.advancedCount++;
+        localStorage.setItem('satoyama_system_analytics', JSON.stringify(stats));
     }
 
-    function updateAdminView() {
-        const stats = JSON.parse(localStorage.getItem('satoyama_stats'));
-        let wrongHtml = '';
-        for(let k in stats.wrong_log) wrongHtml += `<li>${k}: ${stats.wrong_log[k]}次</li>`;
-        document.getElementById('admin-content').innerHTML = `
-            <p>初階玩家：${stats.basic} | 進階玩家：${stats.advanced}</p>
-            <p>錯題排行：</p><ul>${wrongHtml || '無資料'}</ul>
+    function logWrongStat(key) {
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics')) || { basicCount: 0, advancedCount: 0, wrongLogs: {} };
+        stats.wrongLogs[key] = (stats.wrongLogs[key] || 0) + 1;
+        localStorage.setItem('satoyama_system_analytics', JSON.stringify(stats));
+    }
+
+    function updateAdminDashboardView() {
+        const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics'));
+        let wrongListHtml = '';
+        for(let key in stats.wrongLogs) {
+            wrongListHtml += `<li>${key} : 被答錯 <span style="color:red; font-weight:bold;">${stats.wrongLogs[key]}</span> 次</li>`;
+        }
+        document.getElementById('admin-stats-content').innerHTML = `
+            <p>👥 <strong>難度選擇人次比例：</strong><br>
+            - 初階玩家（小石虎）：<strong>${stats.basicCount}</strong> 人次<br>
+            - 進階玩家（大冠鷲）：<strong>${stats.advancedCount}</strong> 人次</p>
+            <p>❌ <strong>館內熱門錯題排行清單：</strong></p>
+            <ul style="padding-left:20px; margin:0;">${wrongListHtml || '<li>目前無錯題點擊數據。</li>'}</ul>
         `;
     }
 
-    document.getElementById('btn-reset-stats').onclick = () => {
-        if(confirm('確定清除數據？')) {
-            localStorage.removeItem('satoyama_stats');
-            initAdminStats();
-            updateAdminView();
+    document.getElementById('btn-clear-data').addEventListener('click', () => {
+        if(confirm('您確定要一鍵清空所有累積的開發人員統計數據嗎？此操作無法撤銷。')) {
+            localStorage.removeItem('satoyama_system_analytics');
+            initLocalStats();
+            updateAdminDashboardView();
+            alert('數據清空完畢！');
         }
-    };
+    });
 };
 </script>
 </body>
