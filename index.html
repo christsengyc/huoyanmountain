@@ -69,19 +69,13 @@
 
         /* === 化身移動軌跡 (Avatar Track) === */
         .avatar-track-container { width: 100%; margin-bottom: 1.5em; padding: 0 10px; }
-        .avatar-track { position: relative; width: 100%; height: 2px; background: #cbd5e1; margin-top: 30px; }
+        .avatar-track { position: relative; width: 100%; height: 4px; background: #cbd5e1; margin-top: 35px; border-radius: 2px;}
         .avatar-icon {
-            position: absolute; bottom: 0; font-size: 2em;
+            position: absolute; bottom: -5px; font-size: 2.5em;
             transform: translateX(-50%); transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
         }
-        .track-flag { position: absolute; bottom: -10px; right: -10px; font-size: 1.5em; }
-
-        .question-image-placeholder {
-            width: 100%; height: 180px; background-color: #e2e8f0; border: 2px dashed #94a3b8;
-            border-radius: 12px; display: flex; justify-content: center; align-items: center;
-            color: #64748b; font-weight: bold; margin-bottom: 1em;
-        }
+        .track-flag { position: absolute; bottom: -12px; right: -15px; font-size: 1.8em; }
 
         .question-text { font-size: 1.15em; font-weight: bold; line-height: 1.6; margin-bottom: 1em; border-left: 5px solid var(--primary); padding-left: 15px; }
         .context-text { font-size: 0.95em; color: #475569; margin-bottom: 1em; line-height: 1.5; }
@@ -95,7 +89,6 @@
         .bpmf-main { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -0.05em; }
         .bpmf-tone { display: flex; align-items: center; padding-left: 2px; font-weight: bold; }
 
-        /* 基礎關卡特別加強行距 */
         body.basic-mode .question-text { line-height: 2.2; margin-bottom: 1.2em; }
         body.basic-mode .context-text { line-height: 2.0; margin-bottom: 1.2em; }
         body.basic-mode .feedback-box { line-height: 2.0; }
@@ -251,10 +244,7 @@
             </div>
 
             <div class="game-card">
-                <div class="question-image-placeholder">
-                    [ 圖片預留區域 ]
-                </div>
-                <div class="context-text" id="q-context">情境載入中...</div>
+                <div class="context-text" id="q-context" style="display: none;"></div>
                 <div class="question-text" id="q-body">問題載入中...</div>
             </div>
             <div id="feedback" class="feedback-box"></div>
@@ -334,68 +324,66 @@ function setFontSize(size) {
 }
 
 // ==========================================
-// 2. 遊戲資料建置 (5+5+1 題庫模組化)
+// 2. 遊戲資料建置 (真實題庫匯入與防呆亂序)
 // ==========================================
-const createBasicQuestion = (floor, location, title, qIndex) => ({
-    type: 'quiz', floor, location, title,
-    context: `這(ㄓㄜˋ)裡(ㄌㄧˇ)是(ㄕˋ)關(ㄍㄨㄢ)於(ㄩˊ) ${floor} [${location}] 的(ㄉㄜ˙)里(ㄌㄧˇ)山(ㄕㄢ)低(ㄉㄧ)碳(ㄊㄢˋ)永(ㄩㄥˇ)續(ㄒㄩˋ)與(ㄩˇ)資(ㄗ)源(ㄩㄢˊ)再(ㄗㄞˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)情(ㄑㄧㄥˊ)境(ㄐㄧㄥˋ)故(ㄍㄨˋ)事(ㄕˋ)預(ㄩˋ)留(ㄌㄧㄡˊ)欄(ㄌㄢˊ)位(ㄨㄟˋ)。`,
-    q: `請(ㄑㄧㄥˇ)問(ㄨㄣˋ)在(ㄗㄞˋ)此(ㄘˇ)展(ㄓㄢˇ)板(ㄅㄢˇ)前(ㄑㄧㄢˊ)，落(ㄌㄨㄛˋ)實(ㄕˊ)友(ㄧㄡˇ)善(ㄕㄢˋ)生(ㄕㄥ)態(ㄊㄞˋ)最(ㄗㄨㄟˋ)棒(ㄅㄤˋ)的(ㄉㄜ˙)選(ㄒㄩˇ)擇(ㄗㄜˊ)是(ㄕˋ)什(ㄕㄣˊ)麼(ㄇㄜ˙)？`,
-    options: [
-        {t: '(A) 符(ㄈㄨˊ)合(ㄏㄜˊ)里(ㄌㄧˇ)山(ㄕㄢ)精(ㄐㄧㄣ)神(ㄕㄣ)的(ㄉㄜ˙)低(ㄉㄧ)碳(ㄊㄢˋ)再(ㄗㄞˋ)利(ㄌㄧˋ)用(ㄩㄥˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)', c: true}, 
-        {t: '(B) 高(ㄍㄠ)度(ㄉㄨˋ)開(ㄎㄞ)發(ㄈㄚ)與(ㄩˇ)破(ㄆㄛˋ)壞(ㄏㄨㄞˋ)生(ㄕㄥ)態(ㄊㄞˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)', c: false},
-        {t: '(C) 維(ㄨㄟˊ)持(㔾)現(ㄒㄧㄢˋ)狀(ㄓㄨㄤˋ)不(ㄅㄨˋ)做(ㄗㄨㄛˋ)任(ㄖㄣˋ)何(ㄏㄜˊ)改(ㄍㄞˇ)變(ㄅㄧㄢˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)'}
-    ],
-    ok: '太(ㄊㄞˋ)棒(ㄅㄤˋ)了(ㄌㄜ˙)！這(ㄓㄜˋ)選(ㄒㄩˇ)項(ㄒㄧㄤˋ)完(ㄨㄢˊ)美(ㄇㄟˇ)呼(ㄏㄨ)應(ㄧㄥ)里(ㄌㄧˇ)山(ㄕㄢ)倡(ㄔㄤˋ)議(ㄧˋ)的(ㄉㄜ˙)精(ㄐㄧㄥ)神(ㄕㄣ)！',
-    tip: '答(ㄉㄚˊ)錯(ㄘㄨㄛˋ)了(ㄌㄜ˙)喔(ㄛ)！再(ㄗㄞˋ)仔(ㄗˇ)細(ㄒㄧˋ)想(ㄒㄧㄢˇ)想(ㄒㄧㄢˇ)看(ㄎㄢˋ)...'
-});
+// 輔助函式：建立題目物件。將原本都是 A 的正確答案，透過指定 ansIdx (0,1,2) 重新分配。
+const createQ = (floor, location, title, qText, opt0, opt1, opt2, ansIdx, tipText) => {
+    return {
+        floor, location, title, 
+        q: qText,
+        options: [
+            { t: opt0, c: ansIdx === 0 },
+            { t: opt1, c: ansIdx === 1 },
+            { t: opt2, c: ansIdx === 2 }
+        ],
+        tip: tipText,
+        ok: '太棒了！你的選擇完美呼應了里山倡議與生態保育的精神！'
+    };
+};
 
-const createAdvQuestion = (floor, location, title, qIndex) => ({
-    type: 'quiz', floor, location, title,
-    context: `這裡是關於 ${floor} [${location}] 的里山低碳永續與資源再利用情境故事預留欄位。`,
-    q: `請問在此展板前，落實友善生態最棒的選擇是什麼？`,
-    options: [
-        {t: '(A) 符合里山精神的低碳再利用選項', c: true}, 
-        {t: '(B) 高度開發與破壞生態選項', c: false},
-        {t: '(C) 維持現狀不做任何改變選項', c: false}
-    ],
-    ok: '太棒了！這選項完美呼應里山倡議人與自然和諧共生的精神！',
-    tip: '答錯了喔！再仔細想想看...'
-});
+// 【2樓 共同題】(答案 B)
+const q2F_0 = createQ('2樓', '接待大廳', '【2樓 最終任務】', '「里山」並不是指某一座特定的高山，根據正式定義，這個源自日文（SATOYAMA）的詞彙，具體是指位在哪兩個地理區域之間，由森林、社區與農業生態系所交織構成的特殊地景？', '(A) 溪流與外海之間', '(B) 高山與平原之間', '(C) 盆地與頂峰之間', 1, '提示：里山指的是我們人類最容易接觸到的淺山邊緣地帶喔！');
 
-// 分區題庫 (5+5+1)
+// 【1樓 初階】
 const pool_basic_1F = [
-    createBasicQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 1】', 1),
-    createBasicQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 2】', 2),
-    createBasicQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 3】', 3),
-    createBasicQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 4】', 4),
-    createBasicQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【初(ㄔㄨ)階(ㄐㄧㄝ) 1 樓(ㄌㄡˊ) 任務 5】', 5)
+    createQ('1樓', '綠網特展區', '【初階 1樓 任務 1】', '為了改善因為都市化與強大開發壓力所造成的淺山平原棲地破碎化，林業及自然保育署自107年起推動了什麼計畫，以編織完整的生態網絡？', '(A) 國家森林遊樂區全面大開發計畫', '(B) 國土生態保育綠色網絡建置計畫', '(C) 臺灣高山脊梁保護區擴大計畫', 1, '提示：這個計畫就像是一張綠色的網子，要把破碎的棲地連起來喔。'),
+    createQ('1樓', '綠網特展區', '【初階 1樓 任務 2】', '受到土地開發以及慣行農業的衝擊，石虎、草鴞等里山物種在平時繁衍與移動時，正面臨什麼樣的生存危機？', '(A) 遭到外來種寵物大量捕捉，導致野外族群在短時間內完全消失', '(B) 受到高山溫室效應影響，被迫向更高海拔的森林集體遷移', '(C) 侷限在零碎分布的棲地，族群間產生隔離且缺乏安全穩定的食物來源', 2, '提示：土地被馬路切成一塊一塊的，動物們就像被困在孤島一樣。'),
+    createQ('1樓', '綠網特展區', '【初階 1樓 任務 3】', '本展覽以火炎山作為故事起點，展望周邊的地景與生態。請問火炎山位於哪兩個鄉鎮的交界處，其森林腹地與在地居民的日常活動息息相關？', '(A) 苗栗三義鄉與苑裡鎮', '(B) 苗栗苗栗市與後龍鎮', '(C) 新竹竹東鎮與北埔鄉', 0, '提示：三義木雕很有名，而火炎山就在三義與苑裡的交界喔。'),
+    createQ('1樓', '綠網特展區', '【初階 1樓 任務 4】', '國土生態綠網計畫的核心，是要在中央山脈以降的地區，建構國土上、下游哪四個重要環境空間的完整連結？', '(A) 山－海－城－田', '(B) 森－川－里－埤', '(C) 林－路－河－港', 1, '提示：從森林、河川，一路連到人類聚落(里)與農田埤塘。'),
+    createQ('1樓', '綠網特展區', '【初階 1樓 任務 5】', '臺灣的高山脊梁山脈以往已設立了各類型的自然保護區（形成保育軸），因此「國土生態綠網」主要盤點並著手縫補的是哪一個高度開發壓力的區域？', '(A) 海拔 3000 公尺以上的高山核心保護區', '(B) 遠洋深海與無人離島的漁業生態區', '(C) 淺山丘陵、平原及海岸地區', 2, '提示：人類活動最頻繁、最容易和動物搶地盤的地方，就是綠網要縫補的重點。')
 ];
-const pool_basic_B1 = [
-    createBasicQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 6】', 6),
-    createBasicQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 7】', 7),
-    createBasicQuestion('B1 樓 常設展區', '地層標本展示櫃', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 8】', 8),
-    createBasicQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 9】', 9),
-    createBasicQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【初(ㄔㄨ)階(ㄐㄧㄝ) B1 樓(ㄌㄡˊ) 任務 10】', 10)
-];
-const pool_basic_2F = [createBasicQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【初(ㄔㄨ)階(ㄐㄧㄝ) 2 樓(ㄌㄡˊ) 任務 11】', 11)];
 
+// 【1樓 進階】
 const pool_adv_1F = [
-    createAdvQuestion('1 樓 綠網特展區', '生態廊道導覽牌', '【進階 1 樓 任務 1】', 1),
-    createAdvQuestion('1 樓 綠網特展區', '溪流生態工法模型', '【進階 1 樓 任務 2】', 2),
-    createAdvQuestion('1 樓 綠網特展區', '石虎多媒體影音區', '【進階 1 樓 任務 3】', 3),
-    createAdvQuestion('1 樓 綠網特展區', '鳥類保育展示牆', '【進階 1 樓 任務 4】', 4),
-    createAdvQuestion('1 樓 綠網特展區', '外來入侵種防治專區', '【進階 1 樓 任務 5】', 5)
+    createQ('1樓', '綠網特展區', '【進階 1樓 任務 1】', '生活在桃園埤塘平原濕地保育軸帶的稀有植物「桃園石龍尾」，因為近年來水域環境變遷及開發等因素導致棲地大幅消失，它在臺灣植物紅皮書中被評定為什麼等級？', '(A) 野外滅絕（EW）', '(B) 瀕危（EN）', '(C) 易危（VU）', 0, '提示：情況非常危急，在自然的野外環境中已經找不到它的蹤跡了。'),
+    createQ('1樓', '綠網特展區', '【進階 1樓 任務 2】', '林業及自然保育署新竹分署自 2025 年初起，與荒野保護協會桃園分會合作開展「桃園石龍尾」的復育，他們認養了哪一個單位的轄內埤塘來進行合作？', '(A) 台灣自來水公司新竹服務所', '(B) 農田水利署桃園管理處', '(C) 經濟部水利署北區水資源分署', 1, '提示：因為是桃園的埤塘，所以管理的單位與桃園的農田水利有關。'),
+    createQ('1樓', '綠網特展區', '【進階 1樓 任務 3】', '透過多方單位的認養與復育合作，能使原本僅有經濟用途的埤塘，同時兼具「灌溉濾水」以及下列哪一項功能，進而強化國土生態綠網效益？', '(A) 水上觀光遊憩功能', '(B) 水力抽蓄發電功能', '(C) 保育功能', 2, '提示：生態綠網的最終目的就是為了保護生物多樣性。'),
+    createQ('1樓', '綠網特展區', '【進階 1樓 任務 4】', '針對新竹油菊、島田氏雞兒腸、槲櫟等瀕臨受脅的植物，新竹分署結合了「國家植物園方舟計畫」，在苗栗的哪一個地點設置了「受脅植物異地復育區」？', '(A) 後龍鎮半天寮', '(B) 三義鄉火炎山山頂', '(C) 通霄鎮飛牛牧場園區', 0, '提示：這個地點位於苗栗靠海的鄉鎮，並非在火炎山上。'),
+    createQ('1樓', '綠網特展區', '【進階 1樓 任務 5】', '林業及自然保育署新竹分署在進行資源盤點調查、棲地風險評估，並著手進行上述受脅植物的域外保育工作時，是以哪一份科學名錄為基礎進行推動？', '(A) 《2020 臺灣陸域陸棲哺乳動物紅皮書》', '(B) 《2017 臺灣維管束植物名錄》', '(C) 《林業野生動植物保育諮詢名冊》', 1, '提示：既然是針對瀕危「植物」的方舟計畫，依據的當然是植物學的名錄。')
 ];
-const pool_adv_B1 = [
-    createAdvQuestion('B1 樓 常設展區', '地下水與地滑測試牆', '【進階 B1 樓 任務 6】', 6),
-    createAdvQuestion('B1 樓 常設展區', '火炎山惡地侵蝕模型', '【進階 B1 樓 任務 7】', 7),
-    createAdvQuestion('B1 樓 常設展區', '地層標本展示櫃', '【進階 B1 樓 任務 8】', 8),
-    createAdvQuestion('B1 樓 常設展區', '生態邊際效應解說牌', '【進階 B1 樓 任務 9】', 9),
-    createAdvQuestion('B1 樓 常設展區', '大安溪流域立體沙盤', '【進階 B1 樓 任務 10】', 10)
-];
-const pool_adv_2F = [createAdvQuestion('2 樓 接待大廳', '里山倡議與永續生活看板', '【進階 2 樓 任務 11】', 11)];
 
-// 注音轉換 (僅套用於初階)
+// 【B1 初階】
+const pool_basic_B1 = [
+    createQ('B1樓', '常設展區', '【初階 B1樓 任務 6】', '根據「火炎山觀察日記」展版的岩壁侵蝕演變圖示，結構鬆散的礫石在雨水沖刷下滑落，當它們離開山谷、在「谷口」堆積時，會形成哪一種特有的地形景觀？', '(A) 海蝕平台地形', '(B) 火山口地形', '(C) 沖積扇地形', 2, '提示：沙石被水流帶出谷口後，會呈現像一把打開的扇子一樣的堆積形狀。'),
+    createQ('B1樓', '常設展區', '【初階 B1樓 任務 7】', '除了冬天的東北季風會形成大霧罩頂外，夏季的「西南季風」一路暢行無阻，直到遇到火炎山地區時會發生什麼事，進而也容易在當地形成霧氣？', '(A) 突然被山脈舉升，導致水汽凝結', '(B) 被強烈冷鋒攔截，轉化為局部豪雨', '(C) 受到下沉氣流壓制，形成乾燥的焚風', 0, '提示：溫暖潮濕的氣流撞到山脈後被迫往上爬升，遇冷就會變成霧氣喔。'),
+    createQ('B1樓', '常設展區', '【初階 B1樓 任務 8】', '火炎山南面常有崩塌，看似荒涼、寸草不生的「卵石流侵蝕溝與沙地」，其實是哪兩種動物的最佳住所？', '(A) 白鼻心與赤腹松鼠', '(B) 臺灣夜鷹與蟻獅', '(C) 臺灣藍鵲與竹雞', 1, '提示：有一種鳥喜歡直接在沙地上產卵，還有一種昆蟲喜歡在沙地設陷阱抓螞蟻！'),
+    createQ('B1樓', '常設展區', '【初階 B1樓 任務 9】', '在「石虎小檔案」展版中，有一區用趣味菜單「今天吃什麼呢？」來介紹石虎的食性。請問在圓餅圖比例中，佔石虎進食比例最高（達 70-80%）的「A餐」主要內容是什麼？', '(A) 兔子', '(B) 小鳥', '(C) 老鼠', 2, '提示：石虎可是農民的好幫手，專門幫忙解決農田裡的偷吃賊！'),
+    createQ('B1樓', '常設展區', '【初階 B1樓 任務 10】', '觀察「石虎小檔案」展版下方的體重計與指針圖示，展版上所標示的一隻正常成年石虎，其體重標準範圍大約落在多少公斤？', '(A) 3 ~ 6 公斤', '(B) 10 ~ 15 公斤', '(C) 1 ~ 2 公斤', 0, '提示：石虎的體型其實跟我們家裡養的家貓差不多大喔！')
+];
+
+// 【B1 進階】
+const pool_adv_B1 = [
+    createQ('B1樓', '常設展區', '【進階 B1樓 任務 6】', '火炎山的岩層含鐵、鋁經風化氧化成鐵鏽色。請問為什麼「新的崩塌面上緣」看起來格外鮮紅，而「老的崩塌面」顏色卻比較淡？', '(A) 因為老的崩塌面表層長滿了耐乾旱的五節芒，遮擋了泥土本色', '(B) 因為老的崩塌面經過長期的風化與淋洗作用，紅色的氧化物質減少了', '(C) 因為新的崩塌面富含剛噴發出的火山灰，冷卻後呈現鮮紅色', 1, '提示：長時間暴露在外受雨水沖刷，會讓原本鮮豔的礦物質流失。'),
+    createQ('B1樓', '常設展區', '【進階 B1樓 任務 7】', '根據「臺灣地區各式各樣的礫岩惡地」展版，臺灣有三處著名的礫岩惡地地形（火炎山、九九峰、十八羅漢山）。展版特別指出，這三處惡地之間最核心的「最大差異」是什麼，進而導致了它們災害大小的不同？', '(A) 形成時的板塊撞擊力道與海拔高度不同', '(B) 周圍環境的年平均降雨量與地下水位不同', '(C) 礫石間的膠結程度和填充物質不同', 2, '提示：這關乎到礫石彼此之間「黏」得緊不緊，決定了它有多容易崩塌。'),
+    createQ('B1樓', '常設展區', '【進階 B1樓 任務 8】', '流浪貓狗被列為石虎生存的重大危機之一，除了會與石虎競爭棲地與食物外，還會帶來什麼具體的野生動物威脅？', '(A) 增加野生動物感染「犬瘟熱」等家畜疾病的可能', '(B) 流浪犬貓會集體挖掘卵石，加速火炎山山壁的崩塌與侵蝕', '(C) 牠們會大量採食樟科果實，導致森林底層的鳥類食物短缺', 0, '提示：未打疫苗的遊蕩犬貓，會成為致命傳染病的行動傳播源。'),
+    createQ('B1樓', '常設展區', '【進階 B1樓 任務 9】', '火炎山森林裡豐富的植物果實為野生動物提供了充足物資。根據展版文案的詳細描述，這座森林中哪一種植物的果實被特別標註為「小鳥們的最愛」，且經常吸引臺灣藍鵲、樹鵲與紅嘴黑鵯等鳥類前來飽餐一頓？', '(A) 臺灣二葉松的松子', '(B) 山黃麻的果實', '(C) 烏桕的果實', 1, '提示：這是一種生長快速的先驅樹種，結出的細小果實是鳥類的天然食堂。'),
+    createQ('B1樓', '常設展區', '【進階 B1樓 任務 10】', '一般的平坦山地以白袍子、相思樹等陽性先驅植物為主，但在火炎山南面極易崩塌的「峭壁與稜線上」，頑強生長並成為該區最具代表性的獨特景觀植物是什麼？', '(A) 烏桕及臺灣赤楊', '(B) 五節芒及甜根子草', '(C) 松樹及黃金毛杜鵑', 2, '提示：你可以想像一下，在紅色的陡峭山崖上，長著堅韌的針葉樹與春天會開出金毛花朵的植物。')
+];
+
+const pool_basic_2F = [q2F_0];
+const pool_adv_2F = [q2F_0];
+
+// 注音轉換引擎 (僅套用於初階題庫)
 function parseZhuyin(text) {
     if(!text) return '';
     return text.replace(/([\u4E00-\u9FFF])\((.*?)\)/g, (match, han, zhuyin) => {
@@ -410,7 +398,6 @@ function parseZhuyin(text) {
 [pool_basic_1F, pool_basic_B1, pool_basic_2F].forEach(arr => {
     arr.forEach(item => {
         item.title = parseZhuyin(item.title);
-        item.context = parseZhuyin(item.context);
         item.q = parseZhuyin(item.q);
         item.options.forEach(opt => opt.t = parseZhuyin(opt.t));
         item.ok = parseZhuyin(item.ok);
@@ -423,10 +410,10 @@ function parseZhuyin(text) {
 // ==========================================
 let currentDifficulty = ''; 
 let avatarEmoji = '';
-let currentStage = ''; // '1F', 'B1', '2F', 'END'
+let currentStage = ''; // '1F', 'B1', '2F'
 let activeQuestions = [];
 let localStep = 0;
-let globalStep = 0; // 總題數(共11題)，用於計算化身軌跡與碳排
+let globalStep = 0; // 總題數(共11題)
 let gameFinished = false; 
 let penaltyTimer = null; 
 
@@ -446,6 +433,7 @@ let addressClicks = 0;
 window.onload = function() {
     initLocalStats();
 
+    // 觸發隱藏後台
     document.getElementById('secret-trigger-address').addEventListener('click', () => {
         addressClicks++;
         if (addressClicks >= 5) {
@@ -486,7 +474,6 @@ window.onload = function() {
         const data = activeQuestions[localStep];
         
         if(!data) {
-            // 該樓層答完，前往下一階段
             if(currentStage === '1F') startScanningPhase('B1');
             else if(currentStage === 'B1') startScanningPhase('2F');
             else if(currentStage === '2F') finalizeGame();
@@ -495,7 +482,6 @@ window.onload = function() {
 
         showScreen('screen-question');
         document.getElementById('top-title').innerHTML = data.title;
-        document.getElementById('q-context').innerHTML = data.context;
         document.getElementById('q-body').innerHTML = data.q;
         
         for(let i=0; i<3; i++) {
@@ -616,7 +602,7 @@ window.onload = function() {
             document.getElementById('scan-title').innerText = "即將登頂";
             document.getElementById('scan-desc').innerText = "請回到【2樓大廳】完成最後的碳中和挑戰！";
             document.getElementById('reader').style.display = 'none';
-            return; // 2樓不用掃描，直接點按鈕
+            return;
         }
 
         document.getElementById('scan-title').innerText = "空間定位解鎖";
@@ -648,10 +634,10 @@ window.onload = function() {
 
         if(stage === '1F') {
             pool = (currentDifficulty === 'basic') ? [...pool_basic_1F] : [...pool_adv_1F];
-            if(planCode === 'planB') pool.reverse(); // 逆時針路線
+            if(planCode === 'planB') pool.reverse(); // 逆時針路線反轉題序
         } else if(stage === 'B1') {
             pool = (currentDifficulty === 'basic') ? [...pool_basic_B1] : [...pool_adv_B1];
-            if(planCode === 'planD') pool.reverse(); // 逆時針路線
+            if(planCode === 'planD') pool.reverse(); // 逆時針路線反轉題序
         } else if(stage === '2F') {
             pool = (currentDifficulty === 'basic') ? [...pool_basic_2F] : [...pool_adv_2F];
         }
@@ -738,22 +724,22 @@ window.onload = function() {
 
     // --- 本地統計控制核心 ---
     function initLocalStats() {
-        if(!localStorage.getItem('satoyama_system_analytics_v5')) {
-            localStorage.setItem('satoyama_system_analytics_v5', JSON.stringify({ basicCount: 0, advancedCount: 0, wrongLogs: {} }));
+        if(!localStorage.getItem('satoyama_system_analytics_v6')) {
+            localStorage.setItem('satoyama_system_analytics_v6', JSON.stringify({ basicCount: 0, advancedCount: 0, wrongLogs: {} }));
         }
     }
     function logPlayerStat(role) {
-        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v5'));
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v6'));
         if(role === 'basic') stats.basicCount++; else stats.advancedCount++;
-        localStorage.setItem('satoyama_system_analytics_v5', JSON.stringify(stats));
+        localStorage.setItem('satoyama_system_analytics_v6', JSON.stringify(stats));
     }
     function logWrongStat(key) {
-        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v5'));
+        let stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v6'));
         stats.wrongLogs[key] = (stats.wrongLogs[key] || 0) + 1;
-        localStorage.setItem('satoyama_system_analytics_v5', JSON.stringify(stats));
+        localStorage.setItem('satoyama_system_analytics_v6', JSON.stringify(stats));
     }
     function updateAdminDashboardView() {
-        const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v5'));
+        const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v6'));
         let wrongListHtml = '';
         for(let key in stats.wrongLogs) {
             wrongListHtml += `<li>${key} : 被答錯 <span style="color:red; font-weight:bold;">${stats.wrongLogs[key]}</span> 次</li>`;
@@ -768,7 +754,7 @@ window.onload = function() {
     }
     document.getElementById('btn-clear-data').addEventListener('click', () => {
         if(confirm('確定要一鍵清空所有累積的數據嗎？')) {
-            localStorage.removeItem('satoyama_system_analytics_v5');
+            localStorage.removeItem('satoyama_system_analytics_v6');
             initLocalStats(); updateAdminDashboardView(); alert('數據已清空！');
         }
     });
