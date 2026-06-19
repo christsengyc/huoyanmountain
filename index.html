@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>里山任務行動：火炎山登頂之旅</title>
+    <!-- 引入 QR Code 掃描套件 -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root {
@@ -20,9 +21,11 @@
             margin: 0; padding: 0; height: 100%;
             font-family: "Microsoft JhengHei", -apple-system, sans-serif;
             background-color: #e2e8f0; display: flex; justify-content: center; color: var(--text);
+            /* 預設字體大小，配合切換 */
             font-size: 16px; transition: font-size 0.3s ease;
         }
 
+        /* 字體縮放控制 */
         body.font-small { font-size: 14px; }
         body.font-medium { font-size: 16px; }
         body.font-large { font-size: 20px; }
@@ -33,6 +36,7 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
 
+        /* 頂部字體控制列 */
         .top-controls {
             background: #fff; padding: 8px 20px; display: flex; justify-content: flex-end;
             border-bottom: 1px dashed #e2e8f0; align-items: center; gap: 8px; flex-shrink: 0;
@@ -64,6 +68,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 1.2em;
         }
 
+        /* === 化身移動軌跡 (Avatar Track) === */
         .avatar-track-container { width: 100%; margin-bottom: 1.5em; padding: 0 10px; }
         .avatar-track { position: relative; width: 100%; height: 4px; background: #cbd5e1; margin-top: 35px; border-radius: 2px;}
         .avatar-icon {
@@ -76,6 +81,7 @@
         .question-text { font-size: 1.15em; font-weight: bold; line-height: 1.6; margin-bottom: 1em; border-left: 5px solid var(--primary); padding-left: 15px; }
         .context-text { font-size: 0.95em; color: #475569; margin-bottom: 1em; line-height: 1.5; }
 
+        /* 注音排版引擎 */
         .bpmf-word { display: inline-flex; align-items: flex-end; vertical-align: text-bottom; margin-right: 0.15em; }
         .bpmf-han { font-size: 1em; line-height: 1.1; }
         .bpmf-ruby { display: flex; flex-direction: column; align-items: center; font-size: 0.45em; margin-left: 3px; color: #64748b; line-height: 1; padding-bottom: 0.1em; }
@@ -101,6 +107,7 @@
         .feedback-correct { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .feedback-wrong { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
+        /* 進度條樣式 */
         .progress-track { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
         .progress-fill-alt { height: 100%; background: #3b82f6; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .progress-fill-car { height: 100%; background: #22c55e; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -109,6 +116,7 @@
         .form-group label { display: block; font-weight: bold; margin-bottom: 0.5em; font-size: 0.95em; color: #334155; }
         .form-group select, .form-group input { width: 100%; padding: 0.8em; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1em; }
 
+        /* 掃描器樣式 */
         #reader { width: 100%; background: #1A1512; border-radius: 14px; overflow: hidden; margin-top: 1em; border: 3px solid #cbd5e1; }
         .debug-scan-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1em; justify-content: center; }
         .debug-btn { background: #EAE3D2; border: 1px solid #C4B799; padding: 0.5em 0.8em; border-radius: 8px; font-size: 0.85em; color: var(--primary); font-weight: bold; cursor: pointer; }
@@ -120,7 +128,17 @@
         
         #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 15px; }
 
-        .responsive-img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block; margin-left: auto; margin-right: auto; }
+        /* 響應式圖片樣式 */
+        .responsive-img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
     </style>
 </head>
 <body>
@@ -198,12 +216,12 @@
             
             <button class="btn btn-primary" id="btn-start-basic" style="padding: 1.5em; font-size: 1.2em;">
                 <div style="font-size: 2.5em; margin-bottom: 10px;">🐆</div>
-                🌱 實習小石虎
+                🌱 實習小石虎 (初階)
             </button>
             
             <button class="btn btn-outline" id="btn-start-adv" style="padding: 1.5em; font-size: 1.2em; border-color: #c89f5d; color: #b45309;">
                 <div style="font-size: 2.5em; margin-bottom: 10px;">🦅</div>
-                🔥 巡山大冠鷲
+                🔥 巡山大冠鷲 (進階)
             </button>
         </div>
 
@@ -211,8 +229,8 @@
             <div style="font-size: 3em; margin-bottom: 10px;" id="scan-icon">📷</div>
             <h2 id="scan-title" style="color: var(--primary);">空間定位解鎖</h2>
             
-            <!-- 加入樓層地圖圖片 -->
-            <img id="scan-map-img" class="responsive-img" src="" alt="樓層地圖" style="display:none;">
+            <!-- 加入樓層地圖圖片，並新增 onerror 避免找不到檔案時破壞版面 -->
+            <img id="scan-map-img" class="responsive-img" src="" alt="樓層地圖" style="display:none;" onerror="this.style.display='none';">
 
             <p id="scan-desc" style="line-height: 1.5; text-align: center; color: #475569;">請順著動線移動，開啟相機掃描現場專屬 QR Code 解鎖新任務路線。</p>
             
@@ -242,8 +260,8 @@
 
             <div class="game-card">
                 <div class="context-text" id="q-context" style="display: none;"></div>
-                <!-- 加入題目專屬圖片 -->
-                <img id="q-image" class="responsive-img" src="" alt="題目圖片" style="display:none;">
+                <!-- 加入題目專屬圖片，並新增 onerror 避免找不到檔案時破壞版面 -->
+                <img id="q-image" class="responsive-img" src="" alt="題目圖片" style="display:none;" onerror="this.style.display='none';">
                 <div class="question-text" id="q-body">問題載入中...</div>
             </div>
             <div id="feedback" class="feedback-box"></div>
