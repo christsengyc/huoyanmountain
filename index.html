@@ -128,10 +128,11 @@
         
         #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 15px; }
 
-        /* 響應式圖片樣式 */
+        /* 響應式圖片樣式 - 優化手機版面配置 */
         .responsive-img { 
             max-width: 100%; 
-            height: auto; 
+            max-height: 25vh; /* 限制圖片最大高度，大約螢幕高度的四分之一，避免佔用整面手機螢幕 */
+            object-fit: contain; /* 確保圖片不變形 */
             border-radius: 8px; 
             margin-bottom: 15px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
@@ -225,11 +226,12 @@
             </button>
         </div>
 
-        <div id="screen-scan" class="screen" style="text-align: center; justify-content: center;">
+        <!-- 解除了 justify-content: center 以確保長內容可以正確捲動 -->
+        <div id="screen-scan" class="screen" style="text-align: center;">
             <div style="font-size: 3em; margin-bottom: 10px;" id="scan-icon">📷</div>
-            <h2 id="scan-title" style="color: var(--primary);">空間定位解鎖</h2>
+            <h2 id="scan-title" style="color: var(--primary); margin-top: 0;">空間定位解鎖</h2>
             
-            <!-- 加入樓層地圖圖片，並新增 onerror 避免找不到檔案時破壞版面 -->
+            <!-- 加入樓層地圖圖片，受限高保護，不會遮住掃描器 -->
             <img id="scan-map-img" class="responsive-img" src="" alt="樓層地圖" style="display:none;" onerror="this.style.display='none';">
 
             <p id="scan-desc" style="line-height: 1.5; text-align: center; color: #475569;">請順著動線移動，開啟相機掃描現場專屬 QR Code 解鎖新任務路線。</p>
@@ -260,7 +262,7 @@
 
             <div class="game-card">
                 <div class="context-text" id="q-context" style="display: none;"></div>
-                <!-- 加入題目專屬圖片，並新增 onerror 避免找不到檔案時破壞版面 -->
+                <!-- 加入題目專屬圖片 -->
                 <img id="q-image" class="responsive-img" src="" alt="題目圖片" style="display:none;" onerror="this.style.display='none';">
                 <div class="question-text" id="q-body">問題載入中...</div>
             </div>
