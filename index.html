@@ -59,7 +59,8 @@
         .status-alt { color: #1d4ed8; background: #dbeafe; }
 
         main { flex: 1; overflow-y: auto; padding: 1.2em; display: flex; flex-direction: column; }
-        .screen { display: none; height: 100%; flex-direction: column; }
+        /* 修正 screen 容器高度限制，確保長內容可以順利觸發捲動 */
+        .screen { display: none; min-height: 100%; flex-direction: column; }
         .screen.active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -116,8 +117,8 @@
         .form-group label { display: block; font-weight: bold; margin-bottom: 0.5em; font-size: 0.95em; color: #334155; }
         .form-group select, .form-group input { width: 100%; padding: 0.8em; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1em; }
 
-        /* 掃描器樣式 */
-        #reader { width: 100%; background: #1A1512; border-radius: 14px; overflow: hidden; margin-top: 1em; border: 3px solid #cbd5e1; }
+        /* 掃描器樣式 - 加上 flex-shrink: 0 與 min-height 確保相機不被壓扁 */
+        #reader { width: 100%; min-height: 250px; flex-shrink: 0; background: #1A1512; border-radius: 14px; overflow: hidden; margin-top: 1em; border: 3px solid #cbd5e1; }
         .debug-scan-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1em; justify-content: center; }
         .debug-btn { background: #EAE3D2; border: 1px solid #C4B799; padding: 0.5em 0.8em; border-radius: 8px; font-size: 0.85em; color: var(--primary); font-weight: bold; cursor: pointer; }
 
@@ -128,13 +129,26 @@
         
         #admin-panel { display: none; margin-top: 20px; border-top: 2px dashed #cbd5e1; padding-top: 15px; }
 
-        /* 響應式圖片樣式 - 優化手機版面配置 */
+        /* 響應式圖片樣式 (用於題目) */
         .responsive-img { 
             max-width: 100%; 
-            max-height: 25vh; /* 限制圖片最大高度，大約螢幕高度的四分之一，避免佔用整面手機螢幕 */
-            object-fit: contain; /* 確保圖片不變形 */
+            max-height: 35vh; 
+            object-fit: contain; 
             border-radius: 8px; 
             margin-bottom: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        /* 掃描頁面的地圖專屬樣式 (縮小體積避免吃掉相機畫面) */
+        .map-img {
+            max-width: 100%; 
+            max-height: 120px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
             display: block; 
             margin-left: auto; 
@@ -226,13 +240,13 @@
             </button>
         </div>
 
-        <!-- 解除了 justify-content: center 以確保長內容可以正確捲動 -->
+        <!-- 確保掃描器頁面排版順暢，不隱藏內容 -->
         <div id="screen-scan" class="screen" style="text-align: center;">
             <div style="font-size: 3em; margin-bottom: 10px;" id="scan-icon">📷</div>
             <h2 id="scan-title" style="color: var(--primary); margin-top: 0;">空間定位解鎖</h2>
             
-            <!-- 加入樓層地圖圖片，受限高保護，不會遮住掃描器 -->
-            <img id="scan-map-img" class="responsive-img" src="" alt="樓層地圖" style="display:none;" onerror="this.style.display='none';">
+            <!-- 使用新的 map-img 縮小高度避免遮擋相機 -->
+            <img id="scan-map-img" class="map-img" src="" alt="樓層地圖" style="display:none;" onerror="this.style.display='none';">
 
             <p id="scan-desc" style="line-height: 1.5; text-align: center; color: #475569;">請順著動線移動，開啟相機掃描現場專屬 QR Code 解鎖新任務路線。</p>
             
@@ -631,29 +645,37 @@ window.onload = function() {
         document.getElementById('debug-btns-2f').style.display = (targetStage === '2F') ? 'flex' : 'none';
         
         let desc = '';
+        let stageName = ''; // 動態產生前往 X 樓的文字
         const scanImg = document.getElementById('scan-map-img');
 
         if(targetStage === '1F') {
+            stageName = '1 樓';
             desc = "請前往【1樓特展廳】，掃描入口處 QR Code 決定探索路線。";
             scanImg.src = "24385_0.jpg";
             scanImg.style.display = "block";
         } else if(targetStage === 'B1') {
+            stageName = 'B1';
             desc = "1樓探索完畢！請前往【地下一樓】，掃描入口處 QR Code。";
             scanImg.src = "24386_0.jpg";
             scanImg.style.display = "block";
         } else if(targetStage === '2F') {
+            stageName = '2 樓';
             document.getElementById('scan-title').innerText = "即將登頂";
+            document.getElementById('top-title').innerText = "前往 " + stageName;
             document.getElementById('scan-desc').innerText = "請回到【2樓大廳】完成最後的碳中和挑戰！";
             document.getElementById('reader').style.display = 'none';
             scanImg.style.display = "none";
             return;
         }
 
+        // 更新頂部標題與掃描區標題
+        document.getElementById('top-title').innerText = "前往 " + stageName;
         document.getElementById('scan-title').innerText = "空間定位解鎖";
         document.getElementById('scan-desc').innerText = desc;
         document.getElementById('reader').style.display = 'block';
 
-        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        // 設定掃描器 qrbox 尺寸為 200，增進小螢幕手機的相容性
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 200 });
         html5QrcodeScanner.render((decodedText) => {
             if(targetStage === '1F' && (decodedText === 'planA' || decodedText === 'planB')) {
                 html5QrcodeScanner.clear(); loadRouteData(targetStage, decodedText);
