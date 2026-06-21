@@ -117,8 +117,10 @@
         .form-group label { display: block; font-weight: bold; margin-bottom: 0.5em; font-size: 0.95em; color: #334155; }
         .form-group select, .form-group input { width: 100%; padding: 0.8em; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1em; }
 
-        /* 掃描器樣式 - 加上 flex-shrink: 0 與 min-height 確保相機不被壓扁 */
-        #reader { width: 100%; min-height: 250px; flex-shrink: 0; background: #1A1512; border-radius: 14px; overflow: hidden; margin-top: 1em; border: 3px solid #cbd5e1; }
+        /* 掃描器樣式 - 優化大小以適應地圖放大 */
+        #reader { width: 100%; max-height: 40vh; flex-shrink: 0; background: #1A1512; border-radius: 14px; overflow: hidden; margin-top: 5px; border: 3px solid #cbd5e1; }
+        #reader video { max-height: 40vh !important; object-fit: cover; }
+        
         .debug-scan-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1em; justify-content: center; }
         .debug-btn { background: #EAE3D2; border: 1px solid #C4B799; padding: 0.5em 0.8em; border-radius: 8px; font-size: 0.85em; color: var(--primary); font-weight: bold; cursor: pointer; }
 
@@ -142,10 +144,10 @@
             margin-right: auto; 
         }
 
-        /* 掃描頁面的地圖專屬樣式 (縮小體積避免吃掉相機畫面) */
+        /* 掃描頁面的地圖專屬樣式 (放大圖片比例，並配合標題縮小) */
         .map-img {
             max-width: 100%; 
-            max-height: 120px; 
+            max-height: 30vh; 
             object-fit: contain; 
             border-radius: 8px; 
             margin-bottom: 10px; 
@@ -240,15 +242,15 @@
             </button>
         </div>
 
-        <!-- 確保掃描器頁面排版順暢，不隱藏內容 -->
+        <!-- 縮小標題字體與圖示，為放大後的地圖騰出空間 -->
         <div id="screen-scan" class="screen" style="text-align: center;">
-            <div style="font-size: 3em; margin-bottom: 10px;" id="scan-icon">📷</div>
-            <h2 id="scan-title" style="color: var(--primary); margin-top: 0;">空間定位解鎖</h2>
+            <div style="font-size: 2em; margin-bottom: 5px;" id="scan-icon">📷</div>
+            <h2 id="scan-title" style="color: var(--primary); margin-top: 0; margin-bottom: 5px; font-size: 1.3em;">空間定位解鎖</h2>
             
-            <!-- 使用新的 map-img 縮小高度避免遮擋相機 -->
+            <!-- 樓層地圖 -->
             <img id="scan-map-img" class="map-img" src="" alt="樓層地圖" style="display:none;" onerror="this.style.display='none';">
 
-            <p id="scan-desc" style="line-height: 1.5; text-align: center; color: #475569;">請順著動線移動，開啟相機掃描現場專屬 QR Code 解鎖新任務路線。</p>
+            <p id="scan-desc" style="line-height: 1.4; text-align: center; color: #475569; font-size: 0.9em; margin-bottom: 10px;">請順著動線移動，開啟相機掃描現場專屬 QR Code 解鎖新任務路線。</p>
             
             <div id="reader"></div>
             
@@ -361,7 +363,8 @@ function setFontSize(size) {
 // ==========================================
 const createQ = (floor, location, title, qText, opt0, opt1, opt2, ansIdx, tipText, imgUrl = null) => {
     return {
-        floor, location, title, 
+        floor, location, rawTitle: title, // 保存原始標題字串
+        title, 
         q: qText,
         options: [
             { t: opt0, c: ansIdx === 0 },
@@ -430,13 +433,22 @@ function parseZhuyin(text) {
     });
 }
 
+// 建立用於後台統計的「乾淨標題」(無注音符號與 HTML) 並替換注音格式
 [pool_basic_1F, pool_basic_B1, pool_basic_2F].forEach(arr => {
     arr.forEach(item => {
+        // 利用正則表達式把括號及括號內的注音移除，提取純淨的標題
+        item.cleanTitle = item.rawTitle.replace(/\(.*?\)/g, '');
         item.title = parseZhuyin(item.title);
         item.q = parseZhuyin(item.q);
         item.options.forEach(opt => opt.t = parseZhuyin(opt.t));
         item.ok = parseZhuyin(item.ok);
         item.tip = parseZhuyin(item.tip);
+    });
+});
+
+[pool_adv_1F, pool_adv_B1, pool_adv_2F].forEach(arr => {
+    arr.forEach(item => {
+        item.cleanTitle = item.rawTitle;
     });
 });
 
@@ -604,8 +616,8 @@ window.onload = function() {
                 btnNext.innerHTML = currentDifficulty === 'basic' ? parseZhuyin('繼(ㄐㄧˋ)續(ㄒㄩˋ)前(ㄑㄧㄢˊ)進(ㄐㄧㄣˋ)') : '繼續前進';
             }
         } else {
-            let logKey = `${currentDifficulty === 'basic' ? '初階' : '進階'}_展板位置:${data.location}`;
-            logWrongStat(logKey);
+            // 改為使用「題目標題」(cleanTitle) 記錄到後台
+            logWrongStat(data.cleanTitle);
 
             for(let i=0; i<3; i++) document.getElementById(`opt-${i}`).disabled = true;
             
@@ -645,12 +657,12 @@ window.onload = function() {
         document.getElementById('debug-btns-2f').style.display = (targetStage === '2F') ? 'flex' : 'none';
         
         let desc = '';
-        let stageName = ''; // 動態產生前往 X 樓的文字
+        let stageName = ''; 
         const scanImg = document.getElementById('scan-map-img');
 
         if(targetStage === '1F') {
             stageName = '1 樓';
-            desc = "請前往【1樓特展廳】，掃描入口處 QR Code 決定探索路線。";
+            desc = "請前往【1樓特展廳】，掃描入口處 QR Code 解鎖任務。";
             scanImg.src = "24385_0.jpg";
             scanImg.style.display = "block";
         } else if(targetStage === 'B1') {
@@ -674,8 +686,8 @@ window.onload = function() {
         document.getElementById('scan-desc').innerText = desc;
         document.getElementById('reader').style.display = 'block';
 
-        // 設定掃描器 qrbox 尺寸為 200，增進小螢幕手機的相容性
-        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 200 });
+        // 設定掃描器 qrbox 尺寸為 180，避免掃描框太大吃掉版面空間
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
         html5QrcodeScanner.render((decodedText) => {
             if(targetStage === '1F' && (decodedText === 'planA' || decodedText === 'planB')) {
                 html5QrcodeScanner.clear(); loadRouteData(targetStage, decodedText);
@@ -812,7 +824,7 @@ window.onload = function() {
         const stats = JSON.parse(localStorage.getItem('satoyama_system_analytics_v7'));
         let wrongListHtml = '';
         for(let key in stats.wrongLogs) {
-            wrongListHtml += `<li>${key} : 被答錯 <span style="color:red; font-weight:bold;">${stats.wrongLogs[key]}</span> 次</li>`;
+            wrongListHtml += `<li><strong style="color: #0284c7;">${key}</strong> : 被答錯 <span style="color:red; font-weight:bold;">${stats.wrongLogs[key]}</span> 次</li>`;
         }
         document.getElementById('admin-stats-content').innerHTML = `
             <p>👥 <strong>難度選擇人次比例：</strong><br>
